@@ -39,6 +39,26 @@ knee, or add a late arrival, and the shifts that are left are worked out
 again from the clock, carrying over the minutes already served. A match in
 progress survives the phone locking or the page reloading.
 
+### Moving players by hand
+
+The plan picks a sensible four, but you are the one watching the game, so
+every shirt on the pitch and every name on the bench can be dragged onto
+another one:
+
+- **pitch onto pitch** swaps their places — and since the keeper is simply
+  whoever stands in the goal, dropping a player on the goalkeeper's shirt is
+  how you change who is in goal
+- **pitch onto bench** (or the other way) makes that substitution there and
+  then
+
+Do it before you press kick off to set who starts, and at half-time to set
+who starts the second half — the break shows the second-half four for
+exactly that reason.
+
+A change by hand costs nobody their minutes. The shifts still to come are
+worked out again from the clock, so the plan absorbs your decision and keeps
+everyone level from there on.
+
 ### How it shares out the minutes
 
 At every shift, the four children with the fewest minutes so far go on, and

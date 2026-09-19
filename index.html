@@ -193,7 +193,13 @@ header{position:sticky;top:0;z-index:30;background:rgba(10,22,40,.94);
   aspect-ratio:1/1.12;max-height:40svh;background:
    repeating-linear-gradient(180deg,#2a8a3d 0 12.5%,#25803a 12.5% 25%)}
 .pitch .lines{position:absolute;inset:0;pointer-events:none}
-.shirt{position:absolute;transform:translate(-50%,-50%);width:5.4rem;text-align:center}
+.shirt{position:absolute;transform:translate(-50%,-50%);width:5.4rem;text-align:center;
+  touch-action:none;cursor:grab;transition:opacity .12s}
+.shirt.drag{opacity:.3}
+.shirt.ghostly{position:fixed;z-index:200;pointer-events:none;opacity:.95;
+  transform:translate(-50%,-50%) scale(1.15);filter:drop-shadow(0 8px 18px rgba(0,0,0,.6))}
+.shirt .d{transition:transform .12s,box-shadow .12s}
+.shirt.drop .d{box-shadow:0 0 0 4px var(--gold);transform:scale(1.08)}
 .shirt .d{width:2.6rem;height:2.6rem;margin:0 auto;border-radius:99px;
   background:#f8fafc;color:#0a1628;display:grid;place-items:center;
   font-weight:800;font-size:1.05rem;border:3px solid #0a1628;box-shadow:0 3px 10px rgba(0,0,0,.4)}
@@ -204,7 +210,11 @@ header{position:sticky;top:0;z-index:30;background:rgba(10,22,40,.94);
 .bench .lab{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
   font-weight:800;width:100%}
 .bench .b{padding:.3rem .65rem;border-radius:99px;background:var(--panel);
-  border:1px solid var(--line);font-size:.86rem;font-weight:700;color:var(--muted)}
+  border:1px solid var(--line);font-size:.86rem;font-weight:700;color:var(--muted);
+  touch-action:none;cursor:grab;transition:opacity .12s,box-shadow .12s}
+.bench .b.drag{opacity:.3}
+.bench .b.drop{box-shadow:0 0 0 3px var(--gold);color:var(--ink)}
+.hint{margin:.5rem 0 0;color:var(--muted);font-size:.78rem;text-align:center;line-height:1.35}
 .bench .b.next{background:#14361f;border-color:var(--grass);color:#bbf7d0}
 .live .ctl{display:flex;gap:.5rem;margin:.8rem 0 0}
 .live .ctl .btn{flex:1}
@@ -1204,7 +1214,11 @@ function buildPlan(players, conf, windows, seed, k0) {
     });
     var gk = kOrder[0];
 
-    var onIds = on.map(function (p) { return p.id; });
+    /* the keeper is held at the front of the lineup, so the pitch can be
+       drawn straight from it and a drag onto the goalkeeper's shirt is
+       simply a swap into slot nought */
+    var onIds = [gk.id].concat(on.filter(function (q) { return q !== gk; })
+                                 .map(function (q) { return q.id; }));
     segs.push({
       half: w.half, start: w.start, end: w.end, on: onIds, gk: gk.id,
       off: players.filter(function (p) { return onIds.indexOf(p.id) < 0; })
@@ -1594,6 +1608,8 @@ function openLive() {
     el("div", { id: "lvAlert" }),
     pitch,
     el("div", { class: "bench", id: "lvBench" }),
+    el("p", { class: "hint", id: "lvHint",
+      html: "Drag a player onto another to swap them over \u2014 onto someone resting to make the change, or onto the keeper to put them in goal." }),
     el("div", { class: "ctl" }, [
       el("button", { class: "btn go", id: "lvStart", text: "▶ Start", onclick: toggleClock }),
       el("button", { class: "btn", id: "lvSubNow", text: "Sub now", onclick: function () {
@@ -1606,7 +1622,7 @@ function openLive() {
       el("button", { class: "btn ghost", id: "lvEnd", text: "End match", onclick: function () {
         if (!M) return;
         if (!confirm("End the match and keep the minutes played?")) return;
-        M.t = elapsed(); M.running = false; M.done = true; M.ht = false;
+        M.t = elapsed(); M.running = false; M.done = true; M.ht = false; M.sig = "";
         wake(false); beep(3, 440); saveMatch(); paintLive();
       } })
     ]),
@@ -1645,8 +1661,13 @@ function tickMatch() {
     var e = elapsed(), halfEnd = (M.half + 1) * halfSec();
     if (e >= halfEnd - 0.001) {
       M.t = halfEnd; M.running = false; wake(false); wakeWanted = false;
-      if (M.half + 1 >= cfg.halves) { M.done = true; beep(3, 440); }
-      else { M.ht = true; M.htEnd = Date.now() + cfg.htMin * 60000; beep(3, 520); }
+      if (M.half + 1 >= cfg.halves) { M.done = true; M.sig = ""; beep(3, 440); }
+      else {
+        M.ht = true; M.htEnd = Date.now() + cfg.htMin * 60000; beep(3, 520);
+        /* through the break, show the four who start the second half - that
+           is what a coach spends those four minutes deciding */
+        M.curSeg = segAt(M.t); M.sig = "";
+      }
       M.alert = null; saveMatch();
     } else {
       var i = segAt(e);
@@ -1709,8 +1730,8 @@ function paintLive() {
     var left = Math.max(0, (M.htEnd - Date.now()) / 1000);
     half.textContent = "HALF TIME";
     clock.textContent = mmss(left); clock.className = "clock ht";
-    sub.innerHTML = left > 0 ? "Back on in <b>" + mmss(left) + "</b>"
-      : "<b>Ready for the second half</b>";
+    sub.innerHTML = (left > 0 ? "Back on in <b>" + mmss(left) + "</b>"
+      : "<b>Ready for the second half</b>") + " · these four start";
   } else {
     half.textContent = (M.half === 0 ? "1ST" : M.half === 1 ? "2ND" : (M.half + 1) + "TH") + " HALF";
     clock.textContent = mmss(e - M.half * halfSec());
@@ -1762,31 +1783,36 @@ function paintLive() {
 
   /* the pitch and the bench, redrawn only when the names change */
   var sig = seg.on.join(",") + "|" + seg.gk + "|" + (M.segs[M.curSeg + 1] || {}).on;
-  if (sig !== M.sig) {
+  if (sig !== M.sig && !DRAGGING) {
     M.sig = sig;
     var pitch = $("#lvPitch");
     Array.prototype.slice.call(pitch.querySelectorAll(".shirt")).forEach(function (n) { n.remove(); });
-    var ordered = [seg.gk].concat(seg.on.filter(function (id) { return id !== seg.gk; }));
     var spots = SPOTS[Math.min(5, Math.max(3, seg.on.length))] || SPOTS[4];
-    ordered.forEach(function (id, i) {
+    seg.on.forEach(function (id, i) {
       var sp = spots[i] || [50, 50];
-      pitch.appendChild(el("div", {
-        class: "shirt" + (i === 0 ? " k" : ""),
+      var sh = el("div", {
+        class: "shirt" + (i === 0 ? " k" : ""), "data-pid": String(id),
         style: "left:" + sp[0] + "%;top:" + sp[1] + "%"
       }, [
         el("div", { class: "d", text: i === 0 ? "GK" : ((nameOf(id).trim()[0] || "?").toUpperCase()) }),
         el("div", { class: "n", text: nameOf(id) })
-      ]));
+      ]);
+      draggable(sh, id);
+      pitch.appendChild(sh);
     });
     var bench = $("#lvBench"); bench.textContent = "";
     bench.appendChild(el("span", { class: "lab", text: "Resting" }));
-    var nxt2 = M.segs[M.curSeg + 1];
+    var nxt2 = M.done ? null : M.segs[M.curSeg + 1];
     if (!seg.off.length) bench.appendChild(el("span", { class: "note", text: "Nobody — everyone is on." }));
     seg.off.forEach(function (id) {
       var next = nxt2 && nxt2.on.indexOf(id) >= 0;
-      bench.appendChild(el("span", { class: "b" + (next ? " next" : ""),
-        text: nameOf(id) + (next ? " ↑" : "") }));
+      var chip = el("span", { class: "b" + (next ? " next" : ""), "data-pid": String(id),
+        text: nameOf(id) + (next ? " ↑" : "") });
+      draggable(chip, id);
+      bench.appendChild(chip);
     });
+    var hint = $("#lvHint");
+    if (hint) hint.style.display = load("dragged", false) ? "none" : "";
   }
 
   /* the minutes table, only while the drawer is open */
@@ -1808,6 +1834,141 @@ function paintLive() {
     });
     det.textContent = ""; det.appendChild(tb);
   }
+}
+
+/* ============================================ moving players by hand
+   The plan picks a sensible four, but the coach is the one watching the
+   game: somebody is cold, somebody has been asking all morning to go in
+   goal, somebody should not be up front today. So every shirt on the pitch
+   and every name on the bench can be picked up and dropped on another one.
+
+   Pitch onto pitch swaps their places, and since the keeper is whoever
+   stands in slot nought, dropping a player on the goalkeeper's shirt is how
+   you change who is in goal. Pitch onto bench makes the substitution there
+   and then. Either way the shifts still to come are worked out again from
+   the clock, so a change by hand costs nobody their minutes - it just moves
+   them around.
+
+   This is done with pointer events rather than HTML drag and drop, which
+   does not exist on an iPhone. */
+var DRAGGING = false;
+
+function draggable(node, pid) {
+  node.addEventListener("pointerdown", function (e) {
+    if (!M || M.done) return;
+    if (e.button != null && e.button !== 0) return;
+    var sx = e.clientX, sy = e.clientY, moved = false, ghost = null, over = null;
+
+    function paintOver(next) {
+      if (over === next) return;
+      if (over) over.classList.remove("drop");
+      over = next;
+      if (over) over.classList.add("drop");
+    }
+    function nearest(x, y) {
+      var best = null, bestD = Infinity;
+      Array.prototype.slice.call(document.querySelectorAll("#live [data-pid]"))
+        .forEach(function (n) {
+          if (+n.dataset.pid === pid) return;
+          var r = n.getBoundingClientRect();
+          if (!r.width) return;
+          var inside = x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+          var d = inside ? 0 : Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
+          if (d < bestD) { bestD = d; best = n; }
+        });
+      return bestD <= 140 ? best : null;
+    }
+    function move(ev) {
+      if (!moved) {
+        if (Math.hypot(ev.clientX - sx, ev.clientY - sy) < 8) return;
+        moved = true; DRAGGING = true;
+        node.classList.add("drag");
+        var keeper = M.segs[M.curSeg] && M.segs[M.curSeg].on[0] === pid;
+        ghost = el("div", { class: "shirt ghostly" + (keeper ? " k" : "") }, [
+          el("div", { class: "d", text: keeper ? "GK" : ((nameOf(pid).trim()[0] || "?").toUpperCase()) }),
+          el("div", { class: "n", text: nameOf(pid) })
+        ]);
+        document.body.appendChild(ghost);
+      }
+      ev.preventDefault();
+      ghost.style.left = ev.clientX + "px";
+      ghost.style.top = ev.clientY + "px";
+      paintOver(nearest(ev.clientX, ev.clientY));
+    }
+    function up(ev) {
+      node.removeEventListener("pointermove", move);
+      node.removeEventListener("pointerup", up);
+      node.removeEventListener("pointercancel", up);
+      if (!moved) return;
+      DRAGGING = false;
+      node.classList.remove("drag");
+      if (ghost) ghost.remove();
+      var target = over;
+      paintOver(null);
+      if (target && ev.type !== "pointercancel") {
+        save("dragged", true);
+        swapPlayers(pid, +target.dataset.pid);
+      } else { M.sig = ""; paintLive(); }
+    }
+    try { node.setPointerCapture(e.pointerId); } catch (err) {}
+    node.addEventListener("pointermove", move);
+    node.addEventListener("pointerup", up);
+    node.addEventListener("pointercancel", up);
+  });
+}
+
+function swapPlayers(aId, bId) {
+  var seg = M.segs[M.curSeg];
+  if (!seg) return;
+  var on = seg.on.slice(), ai = on.indexOf(aId), bi = on.indexOf(bId);
+  if (ai < 0 && bi < 0) return;                 /* two on the bench: nothing */
+  if (ai >= 0 && bi >= 0) { on[ai] = bId; on[bi] = aId; }
+  else if (ai >= 0) on[ai] = bId;
+  else on[bi] = aId;
+  applyLineup(on);
+  beep(1, 760);
+}
+
+/* Put this exact four on the pitch from now, and work out the shifts that
+   follow with the minutes already served carried over. */
+function applyLineup(on) {
+  var t = Math.min(elapsed(), totalSec());
+  var hs = halfSec(), h0 = Math.min(cfg.halves - 1, Math.floor(t / hs + 1e-9));
+
+  /* run the hand-picked four to the next shift change that is not already
+     on top of us, so a swap made seconds before the buzzer is not undone */
+  var segEnd = null;
+  for (var i = 0; i < M.segs.length; i++) {
+    if (M.segs[i].end > t + 1) { segEnd = M.segs[i].end; break; }
+  }
+  if (segEnd == null) segEnd = totalSec();
+  segEnd = Math.min(segEnd, (h0 + 1) * hs);
+  if (segEnd <= t + 0.5) return;
+
+  var kept = [];
+  M.segs.forEach(function (sg) {
+    if (sg.end <= t + 0.001) kept.push(sg);
+    else if (sg.start < t - 0.001)
+      kept.push({ half: sg.half, start: sg.start, end: t, on: sg.on, gk: sg.gk, off: sg.off });
+  });
+
+  var pl = available(), onSet = {};
+  on.forEach(function (id) { onSet[id] = 1; });
+  kept.push({ half: h0, start: t, end: segEnd, on: on.slice(), gk: on[0],
+              off: pl.filter(function (q) { return !onSet[q.id]; })
+                     .map(function (q) { return q.id; }) });
+
+  var ids = squad.map(function (q) { return q.id; });
+  var seed = tally(kept, segEnd, ids);
+  seed.lastGk = on[0]; seed.onNow = on.slice();
+  var remain = M.segs.filter(function (sg) {
+    return sg.half === h0 && sg.end > segEnd + 0.001; }).length;
+  var fresh = buildPlan(pl, cfg, planWindows(cfg, segEnd, remain), seed, kept.length);
+
+  M.segs = kept.concat(fresh);
+  M.curSeg = segAt(t);
+  M.alert = null; M.sig = "";
+  saveMatch(); paintLive();
 }
 
 /* who is actually here, changed mid-game */
