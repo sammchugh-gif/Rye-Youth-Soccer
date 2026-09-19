@@ -71,7 +71,9 @@ There is nothing to build. `index.html` is the whole application; `fresh.js`
 stops a home-screen copy serving you yesterday's version. To work on it,
 open `index.html` in a browser.
 
-Pushing to `main` publishes it — see `.github/workflows/pages.yml`.
+It is published by GitHub Pages straight from `main` — Settings → Pages →
+*Deploy from a branch*, `main`, `/ (root)` — so pushing to `main` is the
+deploy. `.nojekyll` keeps Pages from running the files through Jekyll.
 
 Squad, settings and any match in progress are kept in the browser's
 `localStorage` on your own device. Nothing is sent anywhere.
