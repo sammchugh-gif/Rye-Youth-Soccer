@@ -1,0 +1,1867 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a1628">
+<title>Rye Youth Soccer &mdash; Coach</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4ed8'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23fff'/%3E%3Cpath d='M16 10l4 3-1.5 4.7h-5L12 13z' fill='%230a1628'/%3E%3C/svg%3E">
+<style>
+:root{
+  --navy:#0a1628; --panel:#122238; --panel2:#182c47; --line:#26405f;
+  --ink:#eef4fd; --muted:#8fa6c4; --rye:#2563eb; --rye-lt:#60a5fa;
+  --grass:#2f9e44; --gold:#ffd166; --warn:#f97316; --bad:#ef4444;
+  --pad:max(.9rem,env(safe-area-inset-left));
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--navy);color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  -webkit-text-size-adjust:100%;overscroll-behavior-y:none}
+body{min-height:100svh;padding-bottom:calc(2rem + env(safe-area-inset-bottom))}
+h1,h2,h3{margin:0;line-height:1.2;letter-spacing:-.01em}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select{font:inherit;color:inherit}
+.wrap{max-width:46rem;margin:0 auto;padding:0 var(--pad)}
+.hide{display:none!important}
+
+/* ------------------------------------------------------------- top bar */
+header{position:sticky;top:0;z-index:30;background:rgba(10,22,40,.94);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top)}
+.brand{display:flex;align-items:center;gap:.65rem;padding:.7rem 0 .55rem}
+.crest{width:34px;height:40px;flex:none}
+.brand .t1{font-size:1.02rem;font-weight:800;letter-spacing:.06em}
+.brand .t2{font-size:.68rem;color:var(--muted);letter-spacing:.16em;font-weight:700}
+.tabs{display:flex;gap:.4rem;padding-bottom:.55rem}
+.tabs button{flex:1;padding:.6rem .4rem;border-radius:11px;background:var(--panel);
+  border:1px solid var(--line);font-weight:700;font-size:.95rem;color:var(--muted)}
+.tabs button[aria-selected=true]{background:var(--rye);border-color:var(--rye-lt);color:#fff}
+
+/* --------------------------------------------------------------- bits */
+.sect{padding:1.1rem 0 .3rem}
+.sect h2{font-size:1.28rem}
+.sect p.lead{color:var(--muted);font-size:.92rem;margin:.35rem 0 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  padding:.72rem 1.05rem;border-radius:12px;background:var(--panel2);
+  border:1px solid var(--line);font-weight:700;font-size:.95rem}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--rye);border-color:var(--rye-lt);color:#fff}
+.btn.go{background:var(--grass);border-color:#4ade80;color:#04220f}
+.btn.warn{background:#7c2d12;border-color:var(--warn);color:#ffe8d5}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.42}
+.btn.wide{width:100%}
+.row{display:flex;gap:.55rem}
+.row>*{flex:1}
+.pill{display:inline-block;padding:.16rem .55rem;border-radius:999px;
+  font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.pill.warm{background:#3b2a0d;color:var(--gold)}
+.pill.skill{background:#0d2f45;color:#7dd3fc}
+.pill.game{background:#0f3320;color:#86efac}
+.note{color:var(--muted);font-size:.85rem}
+
+/* --------------------------------------------------------- warm-up tab */
+.plan-bar{margin:.8rem 0 0;padding:.8rem .85rem;border-radius:15px;
+  background:linear-gradient(160deg,#16325c,#102340);border:1px solid var(--line)}
+.plan-bar .top{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.5rem}
+.plan-bar .top b{font-size:1rem}
+.plan-bar .total{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:800}
+.plan-bar .total.over{color:var(--warn)}
+.meter{height:7px;border-radius:99px;background:#0a1628;overflow:hidden;margin-bottom:.6rem}
+.meter i{display:block;height:100%;background:var(--grass);transition:width .25s}
+.meter i.over{background:var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.chip{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .45rem .3rem .6rem;
+  border-radius:99px;background:#0d1e35;border:1px solid var(--line);font-size:.82rem}
+.chip b{font-weight:700}
+.chip x{display:grid;place-items:center;width:18px;height:18px;border-radius:99px;
+  background:#24405f;font-size:.8rem;line-height:1;font-style:normal}
+.presets{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.presets button{padding:.35rem .7rem;border-radius:99px;background:#0d1e35;
+  border:1px solid var(--line);font-size:.8rem;font-weight:700;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));
+  gap:.75rem;margin:.9rem 0 1.4rem}
+.drill{text-align:left;overflow:hidden;display:flex;flex-direction:column;
+  background:var(--panel);border:1px solid var(--line);border-radius:15px}
+.drill.on{border-color:var(--grass);box-shadow:0 0 0 1px var(--grass) inset}
+.drill canvas{display:block;width:100%;aspect-ratio:16/10;background:#123a1c}
+.drill .meta{padding:.6rem .75rem .75rem}
+.drill .meta h3{font-size:1rem;margin-bottom:.25rem}
+.drill .meta .sub{color:var(--muted);font-size:.8rem;display:flex;gap:.5rem;
+  align-items:center;margin-top:.3rem}
+.drill .add{margin-left:auto;font-weight:800;color:var(--grass)}
+
+/* ------------------------------------------------------------- sheet */
+.sheet{position:fixed;inset:0;z-index:90;background:rgba(4,10,20,.72);
+  display:flex;align-items:flex-end;justify-content:center}
+.sheet .inner{width:100%;max-width:46rem;max-height:92svh;overflow:auto;
+  background:var(--navy);border:1px solid var(--line);border-radius:20px 20px 0 0;
+  padding:0 var(--pad) calc(1.5rem + env(safe-area-inset-bottom))}
+.sheet .grab{position:sticky;top:0;background:var(--navy);padding:.55rem 0 .2rem;z-index:2}
+.sheet .grab i{display:block;width:40px;height:4px;border-radius:9px;background:#31496a;margin:0 auto}
+.sheet h2{font-size:1.35rem;margin:.5rem 0 .1rem}
+.sheet canvas{display:block;width:100%;aspect-ratio:16/10;border-radius:13px;
+  background:#123a1c;margin:.75rem 0}
+.sheet h4{margin:1.05rem 0 .35rem;font-size:.74rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--rye-lt)}
+.sheet ul{margin:.2rem 0;padding-left:1.15rem}
+.sheet li{margin:.3rem 0}
+.sheet .foot{position:sticky;bottom:0;background:var(--navy);padding:.85rem 0 .3rem;margin-top:.7rem}
+.sheet .foot::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:1.6rem;
+  background:linear-gradient(transparent,var(--navy));pointer-events:none}
+
+/* ------------------------------------------------- run-the-warm-up mode */
+.runner{position:fixed;inset:0;z-index:70;background:var(--navy);
+  display:flex;flex-direction:column;padding:calc(.8rem + env(safe-area-inset-top)) var(--pad)
+  calc(1rem + env(safe-area-inset-bottom))}
+.runner .head{display:flex;align-items:center;gap:.6rem}
+.runner .head .of{color:var(--muted);font-size:.85rem;font-weight:700}
+.runner h2{font-size:1.5rem;margin:.5rem 0 0}
+.runner .big{font-size:clamp(4rem,22vw,8rem);font-weight:800;text-align:center;
+  font-variant-numeric:tabular-nums;line-height:1;margin:.4rem 0;letter-spacing:-.03em}
+.runner .big.low{color:var(--gold)}
+.runner canvas{display:block;width:100%;flex:1 1 auto;min-height:34svh;max-height:52svh;
+  border-radius:14px;background:#123a1c;margin-top:.35rem}
+.runner .spacer{flex:1;min-height:0}
+.runner .pts{margin:.6rem 0 0;color:var(--muted);font-size:.88rem}
+.runner .ctl{display:flex;gap:.5rem;margin-top:.7rem}
+.runner .ctl .btn{flex:1}
+
+/* ------------------------------------------------------------ match tab */
+.field{display:flex;align-items:center;gap:.6rem;margin:.55rem 0}
+.field label{flex:none;width:9.5rem;font-size:.9rem;color:var(--muted);font-weight:600}
+.field .ctl{flex:1;display:flex;gap:.4rem;align-items:center}
+.stepper{display:flex;align-items:center;gap:.5rem}
+.stepper button{width:34px;height:34px;border-radius:9px;background:var(--panel2);
+  border:1px solid var(--line);font-weight:800;font-size:1.1rem}
+.stepper b{min-width:4.6rem;text-align:center;font-variant-numeric:tabular-nums}
+.seg{display:flex;gap:.3rem;flex-wrap:wrap}
+.seg button{padding:.4rem .7rem;border-radius:9px;background:var(--panel2);
+  border:1px solid var(--line);font-size:.85rem;font-weight:700;color:var(--muted)}
+.seg button small{display:block;font-size:.66rem;font-weight:700;opacity:.7;margin-top:.05rem}
+.seg button[aria-pressed=true]{background:var(--rye);border-color:var(--rye-lt);color:#fff}
+
+.roster{margin:.6rem 0 0}
+.pl{display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;border-radius:12px;
+  background:var(--panel);border:1px solid var(--line);margin-bottom:.4rem}
+.pl.out{opacity:.45}
+.pl input[type=text]{flex:1;min-width:0;background:transparent;border:0;outline:0;
+  font-size:1rem;font-weight:600;padding:.25rem 0}
+.tog{flex:none;display:grid;place-items:center;min-width:44px;padding:0 .45rem;height:34px;border-radius:9px;
+  background:#0d1e35;border:1px solid var(--line);font-size:.72rem;font-weight:800;color:var(--muted)}
+.tog[aria-pressed=true]{background:var(--grass);border-color:#4ade80;color:#04220f}
+.tog.gk[aria-pressed=true]{background:var(--gold);border-color:#fde68a;color:#3a2c05}
+.pl .del{flex:none;width:30px;height:30px;border-radius:9px;color:var(--muted);font-size:1.1rem}
+
+.tl{margin:.5rem 0 0}
+.tl .r{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem}
+.tl .r .nm{width:6.4rem;flex:none;font-size:.85rem;font-weight:700;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.tl .r .bar{flex:1;display:flex;height:22px;border-radius:6px;overflow:hidden;background:#0a1628;gap:1px}
+.tl .r .bar i{display:block;background:#1e3350}
+.tl .r .bar i.on{background:var(--grass)}
+.tl .r .bar i.gk{background:var(--gold)}
+.tl .r .mins{flex:none;width:3.1rem;text-align:right;font-size:.82rem;
+  font-variant-numeric:tabular-nums;color:var(--muted)}
+.tl .r .mins b{color:var(--ink)}
+.legend{display:flex;gap:.9rem;color:var(--muted);font-size:.78rem;margin-top:.5rem}
+.legend s{width:11px;height:11px;border-radius:3px;display:inline-block;
+  vertical-align:-1px;margin-right:.3rem}
+
+/* --------------------------------------------------------- live match */
+.live{position:fixed;inset:0;z-index:70;background:var(--navy);overflow:auto;
+  padding:calc(.6rem + env(safe-area-inset-top)) var(--pad)
+  calc(1.1rem + env(safe-area-inset-bottom))}
+.live .bar{display:flex;align-items:center;gap:.5rem}
+.live .bar .half{font-weight:800;letter-spacing:.09em;font-size:.8rem;color:var(--rye-lt)}
+.clock{font-size:clamp(3.6rem,20vw,7rem);font-weight:800;text-align:center;
+  font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.035em;margin:.15rem 0 0}
+.clock.paused{color:var(--muted)}
+.clock.ht{color:var(--gold)}
+.subclock{text-align:center;color:var(--muted);font-size:.9rem;font-weight:700;
+  font-variant-numeric:tabular-nums}
+.subclock b{color:var(--gold)}
+.alert{margin:.6rem 0 0;padding:.7rem .85rem;border-radius:14px;background:#7c2d12;
+  border:1px solid var(--warn);font-weight:700}
+.alert.flash{animation:fl .8s steps(1,end) infinite}
+@keyframes fl{50%{background:#9a3412;border-color:#fdba74}}
+.alert .sw{display:block;font-size:.95rem;margin-top:.25rem;font-weight:600}
+.alert .sw em{font-style:normal;color:#fed7aa}
+
+.pitch{position:relative;margin:.7rem 0 0;border-radius:15px;overflow:hidden;
+  aspect-ratio:1/1.12;max-height:40svh;background:
+   repeating-linear-gradient(180deg,#2a8a3d 0 12.5%,#25803a 12.5% 25%)}
+.pitch .lines{position:absolute;inset:0;pointer-events:none}
+.shirt{position:absolute;transform:translate(-50%,-50%);width:5.4rem;text-align:center}
+.shirt .d{width:2.6rem;height:2.6rem;margin:0 auto;border-radius:99px;
+  background:#f8fafc;color:#0a1628;display:grid;place-items:center;
+  font-weight:800;font-size:1.05rem;border:3px solid #0a1628;box-shadow:0 3px 10px rgba(0,0,0,.4)}
+.shirt.k .d{background:var(--gold);border-color:#7a5c00}
+.shirt .n{margin-top:.2rem;font-size:.82rem;font-weight:800;
+  text-shadow:0 1px 4px rgba(0,0,0,.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bench{margin:.7rem 0 0;display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.bench .lab{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+  font-weight:800;width:100%}
+.bench .b{padding:.3rem .65rem;border-radius:99px;background:var(--panel);
+  border:1px solid var(--line);font-size:.86rem;font-weight:700;color:var(--muted)}
+.bench .b.next{background:#14361f;border-color:var(--grass);color:#bbf7d0}
+.live .ctl{display:flex;gap:.5rem;margin:.8rem 0 0}
+.live .ctl .btn{flex:1}
+.live .ctl2{display:flex;gap:.5rem;margin:.5rem 0 0}
+.live .ctl2 .btn{flex:1;padding:.55rem .6rem;font-size:.85rem}
+details.mins{margin:.8rem 0 0}
+details.mins summary{cursor:pointer;color:var(--rye-lt);font-weight:700;font-size:.9rem}
+table.mins{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.9rem}
+table.mins td,table.mins th{padding:.35rem .3rem;border-bottom:1px solid var(--line);text-align:right}
+table.mins th:first-child,table.mins td:first-child{text-align:left}
+table.mins th{color:var(--muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+table.mins td{font-variant-numeric:tabular-nums}
+footer{text-align:center;color:#5c6a85;font-size:.78rem;padding:1.6rem 0 .5rem}
+</style>
+<script src="fresh.js" defer></script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg class="crest" viewBox="0 0 34 40" aria-hidden="true">
+        <path d="M2 3h30v22c0 7-8 11-15 14C10 36 2 32 2 25z" fill="#2563eb" stroke="#dbeafe" stroke-width="2"/>
+        <circle cx="17" cy="19" r="8" fill="#fff"/>
+        <path d="M17 13.4l4.6 3.3-1.75 5.4h-5.7l-1.75-5.4z" fill="#0a1628"/>
+        <path d="M17 13.4V9M21.6 16.7l4-1.3M20.15 22.1l2.6 3.4M13.85 22.1l-2.6 3.4M12.4 16.7l-4-1.3"
+              stroke="#0a1628" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="t1">RYE YOUTH SOCCER</div>
+        <div class="t2">COACH&rsquo;S SIDELINE KIT</div>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button id="tabWarm" role="tab" aria-selected="true">Warm-Up</button>
+      <button id="tabMatch" role="tab" aria-selected="false">Match Day</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="paneWarm"></section>
+  <section id="paneMatch" class="hide"></section>
+  <footer>Rye Youth Soccer &middot; 4-a-side &middot; built for the touchline</footer>
+</main>
+
+<div id="sheet"></div>
+<div id="runner"></div>
+<div id="live"></div>
+
+<script>
+"use strict";
+/* ==========================================================================
+   Rye Youth Soccer - coach's sideline kit
+
+   Two tools, one page, no server. The warm-up half is a library of drills a
+   parent-coach can run with seven-to-nine year olds, each one drawn as a
+   little moving picture so you can see the shape of it before you set the
+   cones out. The match half keeps the clock for a 4-a-side game and works
+   out, in advance, who is on the pitch and who is in goal at every minute,
+   so every child gets about the same number of minutes and everybody takes
+   a turn in goal.
+
+   Everything is held in localStorage under "rye." so the squad you typed in
+   last Saturday is still there next Saturday.
+   ====================================================================== */
+
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var save = function (k, v) { try { localStorage.setItem("rye." + k, JSON.stringify(v)); } catch (e) {} };
+var load = function (k, d) {
+  try { var v = localStorage.getItem("rye." + k); return v == null ? d : JSON.parse(v); }
+  catch (e) { return d; }
+};
+function el(tag, attrs, kids) {
+  var n = document.createElement(tag);
+  if (attrs) for (var k in attrs) {
+    if (k === "class") n.className = attrs[k];
+    else if (k === "html") n.innerHTML = attrs[k];
+    else if (k === "text") n.textContent = attrs[k];
+    else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), attrs[k]);
+    else if (attrs[k] != null) n.setAttribute(k, attrs[k]);
+  }
+  (kids || []).forEach(function (c) { if (c) n.appendChild(c); });
+  return n;
+}
+function mmss(sec) {
+  sec = Math.max(0, Math.round(sec));
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return m + ":" + (s < 10 ? "0" : "") + s;
+}
+function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+
+/* A short blip and a buzz, for the moments the coach is looking at the pitch
+   and not at the phone. The audio context is made on the first tap, which is
+   the only time a browser will let us have one. */
+var actx = null;
+function beep(times, hz) {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    for (var i = 0; i < (times || 1); i++) {
+      var o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + i * 0.26;
+      o.type = "square"; o.frequency.value = hz || 880;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.25, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.20);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + 0.22);
+    }
+  } catch (e) {}
+  try { if (navigator.vibrate) navigator.vibrate(times > 1 ? [120, 90, 120, 90, 160] : 120); } catch (e) {}
+}
+
+/* Hold the screen awake while a clock is running. Fails silently where the
+   browser has no wake lock, which is most of them; on an iPhone added to the
+   home screen it works. */
+var wl = null;
+function wake(on) {
+  try {
+    if (on && !wl && navigator.wakeLock) {
+      navigator.wakeLock.request("screen").then(function (l) { wl = l; }, function () {});
+    } else if (!on && wl) { wl.release(); wl = null; }
+  } catch (e) {}
+}
+document.addEventListener("visibilitychange", function () {
+  if (document.visibilityState === "visible" && wl === null && wakeWanted) wake(true);
+});
+var wakeWanted = false;
+
+/* ========================================================== drill drawing
+   Every diagram is drawn in the same 100 x 62 box of "field units" and then
+   scaled to whatever canvas it lands in, so the same drill function serves
+   the little card on the shelf and the big picture in the detail sheet.
+   t runs 0 to 1 and loops, so a drill draws one cycle of itself. */
+
+var COL = { home: "#2563eb", away: "#ef4444", neutral: "#facc15", coach: "#f8fafc" };
+
+function gfx(ctx, w, h) {
+  var s = Math.min(w / 100, h / 62), ox = (w - 100 * s) / 2, oy = (h - 62 * s) / 2;
+  var g = {
+    ctx: ctx, s: s,
+    X: function (x) { return ox + x * s; },
+    Y: function (y) { return oy + y * s; },
+    U: function (u) { return u * s; }
+  };
+
+  g.grass = function () {
+    ctx.fillStyle = "#256f33"; ctx.fillRect(0, 0, w, h);
+    for (var i = 0; i < 7; i++) {
+      ctx.fillStyle = i % 2 ? "#2a7d3a" : "#237030";
+      ctx.fillRect(0, h * i / 7, w, h / 7 + 1);
+    }
+  };
+  g.area = function (x, y, ww, hh, dash) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,.72)"; ctx.lineWidth = Math.max(1, g.U(0.7));
+    if (dash) ctx.setLineDash([g.U(2), g.U(2)]);
+    ctx.strokeRect(g.X(x), g.Y(y), g.U(ww), g.U(hh));
+    ctx.restore();
+  };
+  g.circle = function (x, y, r) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = Math.max(1, g.U(0.6));
+    ctx.beginPath(); ctx.arc(g.X(x), g.Y(y), g.U(r), 0, 7); ctx.stroke();
+    ctx.restore();
+  };
+  g.cone = function (x, y, col) {
+    var X = g.X(x), Y = g.Y(y), r = g.U(2.4);
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,.28)";
+    ctx.beginPath(); ctx.ellipse(X, Y + r * 0.35, r * 0.95, r * 0.34, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = col || "#fb923c";
+    ctx.beginPath(); ctx.moveTo(X, Y - r * 1.25); ctx.lineTo(X + r * 0.85, Y + r * 0.3);
+    ctx.lineTo(X - r * 0.85, Y + r * 0.3); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  };
+  g.gate = function (x1, y1, x2, y2, col) { g.cone(x1, y1, col); g.cone(x2, y2, col); };
+  g.player = function (x, y, col, label) {
+    var X = g.X(x), Y = g.Y(y), r = g.U(3.5);
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,.3)";
+    ctx.beginPath(); ctx.ellipse(X, Y + r * 0.9, r * 0.9, r * 0.32, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = col; ctx.strokeStyle = "rgba(10,22,40,.85)"; ctx.lineWidth = Math.max(1, g.U(0.8));
+    ctx.beginPath(); ctx.arc(X, Y, r, 0, 7); ctx.fill(); ctx.stroke();
+    if (label) {
+      ctx.fillStyle = col === COL.neutral || col === COL.coach ? "#132238" : "#fff";
+      ctx.font = "700 " + g.U(3.6) + "px system-ui,sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(label, X, Y + g.U(0.2));
+    }
+    ctx.restore();
+  };
+  g.ball = function (x, y) {
+    var X = g.X(x), Y = g.Y(y), r = g.U(1.9);
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,.3)";
+    ctx.beginPath(); ctx.ellipse(X, Y + r * 0.85, r * 0.9, r * 0.35, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(X, Y, r, 0, 7); ctx.fill();
+    ctx.fillStyle = "#0f172a";
+    ctx.beginPath();
+    for (var i = 0; i < 5; i++) {
+      var a = -Math.PI / 2 + i * Math.PI * 2 / 5, rr = r * 0.52;
+      ctx[i ? "lineTo" : "moveTo"](X + Math.cos(a) * rr, Y + Math.sin(a) * rr);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  };
+  g.goal = function (x, y, ww, facing) {
+    var X = g.X(x), Y = g.Y(y), W = g.U(ww), D = g.U(4) * (facing === "down" ? 1 : -1);
+    ctx.save();
+    ctx.strokeStyle = "#f8fafc"; ctx.lineWidth = Math.max(1.5, g.U(1));
+    ctx.beginPath(); ctx.moveTo(X - W / 2, Y); ctx.lineTo(X - W / 2, Y + D);
+    ctx.lineTo(X + W / 2, Y + D); ctx.lineTo(X + W / 2, Y); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.38)"; ctx.lineWidth = Math.max(0.6, g.U(0.35));
+    for (var i = 1; i < 6; i++) {
+      var px = X - W / 2 + W * i / 6;
+      ctx.beginPath(); ctx.moveTo(px, Y); ctx.lineTo(px, Y + D); ctx.stroke();
+    }
+    ctx.restore();
+  };
+  g.path = function (pts, opt) {
+    opt = opt || {};
+    ctx.save();
+    ctx.strokeStyle = opt.col || "rgba(255,255,255,.85)";
+    ctx.lineWidth = Math.max(1, g.U(opt.wide ? 1.1 : 0.8));
+    ctx.lineJoin = "round"; ctx.lineCap = "round";
+    if (opt.dash) ctx.setLineDash([g.U(2.6), g.U(2.2)]);
+    ctx.beginPath();
+    pts.forEach(function (p, i) { ctx[i ? "lineTo" : "moveTo"](g.X(p[0]), g.Y(p[1])); });
+    ctx.stroke();
+    if (opt.head !== false) {
+      var a = pts[pts.length - 1], b = pts[pts.length - 2] || a;
+      var an = Math.atan2(g.Y(a[1]) - g.Y(b[1]), g.X(a[0]) - g.X(b[0])), hl = g.U(2.6);
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(g.X(a[0]), g.Y(a[1]));
+      ctx.lineTo(g.X(a[0]) - Math.cos(an - 0.45) * hl, g.Y(a[1]) - Math.sin(an - 0.45) * hl);
+      ctx.moveTo(g.X(a[0]), g.Y(a[1]));
+      ctx.lineTo(g.X(a[0]) - Math.cos(an + 0.45) * hl, g.Y(a[1]) - Math.sin(an + 0.45) * hl);
+      ctx.stroke();
+    }
+    ctx.restore();
+  };
+  g.txt = function (x, y, str, col, size) {
+    ctx.save();
+    ctx.fillStyle = col || "rgba(255,255,255,.92)";
+    ctx.font = "800 " + g.U(size || 4.4) + "px system-ui,sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.shadowColor = "rgba(0,0,0,.55)"; ctx.shadowBlur = g.U(1.5);
+    ctx.fillText(str, g.X(x), g.Y(y));
+    ctx.restore();
+  };
+  g.tag = function (x, y, str, col) {
+    ctx.save();
+    ctx.font = "800 " + g.U(3.4) + "px system-ui,sans-serif";
+    var wpx = ctx.measureText(str).width + g.U(3);
+    ctx.fillStyle = col || "rgba(10,22,40,.78)";
+    var rx = g.X(x) - wpx / 2, ry = g.Y(y) - g.U(2.6);
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(rx, ry, wpx, g.U(5.2), g.U(2));
+    else ctx.rect(rx, ry, wpx, g.U(5.2));
+    ctx.fill();
+    ctx.fillStyle = "#e8f0fc"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(str, g.X(x), g.Y(y) + g.U(0.2));
+    ctx.restore();
+  };
+  return g;
+}
+
+/* movement helpers ------------------------------------------------------ */
+function along(pts, u) {
+  u = Math.max(0, Math.min(1, u));
+  var segs = [], total = 0, i;
+  for (i = 1; i < pts.length; i++) {
+    var d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    segs.push(d); total += d;
+  }
+  if (!total) return [pts[0][0], pts[0][1]];
+  var want = u * total, run = 0;
+  for (i = 0; i < segs.length; i++) {
+    if (run + segs[i] >= want) {
+      var f = segs[i] ? (want - run) / segs[i] : 0;
+      return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * f,
+              pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f];
+    }
+    run += segs[i];
+  }
+  return [pts[pts.length - 1][0], pts[pts.length - 1][1]];
+}
+/* progress inside a slice of the loop: window(t, .2, .6) is 0 before 20%,
+   ramps to 1 at 60%, then stays 1 */
+function win(t, a, b) { return Math.max(0, Math.min(1, (t - a) / (b - a))); }
+function ping(t) { return t < 0.5 ? t * 2 : 2 - t * 2; }
+function orbit(cx, cy, rx, ry, u, phase) {
+  var a = (u + (phase || 0)) * Math.PI * 2;
+  return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry];
+}
+
+/* ============================================================ the drills
+   Twelve things that work with seven-to-nine year olds on a Saturday
+   morning: short, loud, everyone has a ball wherever possible, and nobody
+   stands in a queue for more than a few seconds. Minutes are the ones that
+   add up to the fifteen the horn gives you. */
+
+var DRILLS = [
+{
+  id: "jog", name: "The Jog Square", mins: 3, tag: "warm",
+  kit: "4 cones", no_ball: true,
+  why: "Gets cold legs moving and ankles awake before anyone kicks anything. Do it every single week so it becomes the thing that means “we have started”.",
+  setup: ["Four cones in a square about fifteen paces a side.",
+          "Everyone lines up at one cone. No balls yet."],
+  run: ["Jog round the square. Each side of the square is a different move.",
+        "Side 1 — easy jog. Side 2 — high knees. Side 3 — heel flicks (kick your own bottom). Side 4 — side steps, facing into the square.",
+        "Two or three laps, then one lap where they choose the silliest way round."],
+  points: ["Call the change loudly at every cone so nobody has to remember the order.",
+           "Do it with them. At this age they copy you far more than they listen to you."],
+  more: ["Last lap as a race, but in pairs holding hands, so it stays daft rather than competitive."],
+  draw: function (g, t) {
+    g.grass();
+    var sq = [[25, 12], [75, 12], [75, 50], [25, 50], [25, 12]];
+    g.path(sq, { dash: true, head: false, col: "rgba(255,255,255,.4)" });
+    [[25, 12], [75, 12], [75, 50], [25, 50]].forEach(function (c) { g.cone(c[0], c[1]); });
+    var moves = ["JOG", "HIGH KNEES", "HEEL FLICKS", "SIDE STEPS"];
+    var side = Math.min(3, Math.floor(t * 4));
+    g.tag(50, 31, moves[side], "rgba(37,99,235,.88)");
+    [0, 0.14, 0.3, 0.46].forEach(function (ph, i) {
+      var p = along(sq, (t + ph) % 1);
+      var bob = Math.sin((t + ph) * 40) * (side === 1 ? 1.6 : side === 2 ? 1.1 : 0.5);
+      g.player(p[0], p[1] - bob, COL.home);
+    });
+  }
+},
+{
+  id: "toe", name: "Toe Taps & Tick-Tocks", mins: 2, tag: "warm",
+  kit: "A ball each",
+  why: "Thirty seconds of this and their feet have remembered where the ball is. It is also the only quiet moment you will get, so use it to say what the session is about.",
+  setup: ["Everyone spread out in a line facing you, one ball each, ball still on the ground in front of them."],
+  run: ["Toe taps: tap the top of the ball with the sole of one foot, then the other, light and fast. Count to twenty out loud together.",
+        "Tick-tocks: tap the ball side to side between the insides of both feet. Count to twenty.",
+        "Rolls: one foot rolls the ball left to right across the body and back. Ten each way."],
+  points: ["Small touches, ball barely moves. If it is rolling away, they are kicking it, not tapping it.",
+           "Head up on the last ten of each — “how many fingers am I holding up?”"],
+  more: ["Have them do the last set with eyes on you the whole time."],
+  draw: function (g, t) {
+    g.grass();
+    var u = ping(t);
+    [28, 50, 72].forEach(function (x, i) {
+      var sw = Math.sin((t + i * 0.2) * Math.PI * 6) * 2.6;
+      g.player(x, 24, COL.home);
+      g.ball(x + sw, 36);
+      g.path([[x - 4, 40], [x + 4, 40]], { dash: true, head: false, col: "rgba(255,255,255,.3)" });
+    });
+    g.tag(50, 54, u < 0.5 ? "TICK" : "TOCK", "rgba(37,99,235,.88)");
+  }
+},
+{
+  id: "lights", name: "Traffic Lights", mins: 3, tag: "skill",
+  kit: "A ball each, 4 cones",
+  why: "The single best way to teach a seven year old to look up while dribbling, because if their head is down they miss the light and they are out.",
+  setup: ["Cone off a box about twenty paces square.", "Every child inside it with a ball."],
+  run: ["GREEN — dribble anywhere in the box.",
+        "AMBER — slow, small touches, ball never more than a step away.",
+        "RED — stop the ball dead with the sole of your foot and freeze.",
+        "Call the colours in a random order. Speed the calling up as they get it."],
+  points: ["Hold the colour up on your fingers as well as shouting it, so they have to look at you.",
+           "Praise stopping the ball with the sole, not standing on it and falling over.",
+           "Nobody is ever “out”. Slow ones just do five star jumps and rejoin."],
+  more: ["Add REVERSE — turn and dribble the other way.",
+         "Add a colour of their choosing; they will invent something ridiculous and remember it forever."],
+  draw: function (g, t) {
+    g.grass();
+    g.area(12, 8, 76, 46, true);
+    [[12, 8], [88, 8], [88, 54], [12, 54]].forEach(function (c) { g.cone(c[0], c[1]); });
+    var phase = t * 3 % 3, light = Math.floor(phase);
+    var names = ["GREEN", "AMBER", "RED"], cols = ["rgba(34,150,60,.92)", "rgba(217,119,6,.92)", "rgba(220,38,38,.92)"];
+    var speed = light === 0 ? 1 : light === 1 ? 0.35 : 0;
+    var m = t * speed;
+    [[0, 0.1], [0.25, 0.4], [0.5, 0.75], [0.75, 0.55], [0.4, 0.9]].forEach(function (s, i) {
+      var p = orbit(50, 31, 26 - i * 2.5, 15 - i * 1.4, m * (i % 2 ? -1 : 1), s[0]);
+      var b = orbit(50, 31, 26 - i * 2.5 + 3.4, 15 - i * 1.4 + 2.4, m * (i % 2 ? -1 : 1), s[0] + 0.02);
+      g.player(p[0], p[1], COL.home); g.ball(b[0], b[1]);
+    });
+    g.tag(50, 31, names[light], cols[light]);
+  }
+},
+{
+  id: "body", name: "Body-Part Dribble", mins: 3, tag: "warm",
+  kit: "A ball each, 4 cones",
+  why: "Same box as Traffic Lights, so it costs you nothing to set up, and it buys you three minutes of laughing while they do four hundred touches.",
+  setup: ["The same coned box.", "Everyone dribbling inside it."],
+  run: ["They dribble around the box.",
+        "You shout a body part — KNEE! — and they must stop the ball and put that body part on it, then carry on.",
+        "Work through knee, elbow, head, shoulder, bottom, both hands, nose."],
+  points: ["Call it while they are moving, not while they are standing still.",
+           "The winner is whoever gets there first without kicking the ball away — say that out loud or it becomes a stampede."],
+  more: ["Two body parts at once. Chaos, but they love it.",
+         "Call “SWAP!” and they leave their ball and run to somebody else's."],
+  draw: function (g, t) {
+    g.grass();
+    g.area(12, 8, 76, 46, true);
+    [[12, 8], [88, 8], [88, 54], [12, 54]].forEach(function (c) { g.cone(c[0], c[1]); });
+    var parts = ["KNEE!", "HEAD!", "ELBOW!", "BOTTOM!"];
+    var k = Math.floor(t * 4 % 4), sub = (t * 4) % 1;
+    var stopped = sub > 0.45;
+    [[0, 0], [0.33, 0.2], [0.66, 0.5], [0.15, 0.8]].forEach(function (s, i) {
+      var m = stopped ? Math.floor(t * 4) / 4 : t;
+      var p = orbit(50, 31, 24 - i * 3, 14 - i * 1.6, m, s[0]);
+      var d = stopped ? 1.2 : 3.6;
+      g.player(p[0], p[1] - (stopped ? 1.4 : 0), COL.home);
+      g.ball(p[0] + d, p[1] + d * 0.7);
+    });
+    g.tag(50, 31, parts[k], "rgba(37,99,235,.9)");
+  }
+},
+{
+  id: "sharks", name: "Sharks and Minnows", mins: 4, tag: "game",
+  kit: "A ball each, 4 cones",
+  why: "Dribbling with your head up, with a reason to do it. The one drill every child asks for by name.",
+  setup: ["Two lines of cones about twenty-five paces apart — the two “shores”.",
+          "All the children on one shore with a ball. One or two of them (or you) in the middle as sharks, with no ball."],
+  run: ["Shout “MINNOWS, SWIM!” and everyone dribbles to the far shore.",
+        "A shark tries to kick their ball out of the area.",
+        "If your ball is knocked out, you become a shark too. Last minnow standing wins."],
+  points: ["Sharks kick the ball away, not the child. Say it before you start, every time.",
+           "If it is over in ten seconds, start with one shark, not three.",
+           "Reset and go again straight away — the value is in the repeats."],
+  more: ["Sharks get a ball too and have to dribble while they hunt. Much harder, much funnier.",
+         "Add a “safe island” cone in the middle that holds one minnow for three seconds."],
+  draw: function (g, t) {
+    g.grass();
+    g.path([[14, 6], [14, 56]], { head: false, col: "rgba(255,255,255,.55)", wide: true });
+    g.path([[86, 6], [86, 56]], { head: false, col: "rgba(255,255,255,.55)", wide: true });
+    [[14, 6], [14, 56], [86, 6], [86, 56]].forEach(function (c) { g.cone(c[0], c[1]); });
+    var u = win(t, 0.08, 0.92);
+    [12, 26, 40, 54].forEach(function (y, i) {
+      var uu = Math.max(0, Math.min(1, u * 1.15 - i * 0.05));
+      var x = 18 + uu * 62, wob = Math.sin((t + i) * 12) * 1.8;
+      g.player(x, y + wob, COL.home); g.ball(x + 5.5, y + wob + 1.5);
+    });
+    var s1 = orbit(48, 22, 9, 10, t * 2, 0), s2 = orbit(56, 42, 10, 9, -t * 2, 0.3);
+    g.player(s1[0], s1[1], COL.away, "S"); g.player(s2[0], s2[1], COL.away, "S");
+    g.tag(50, 59, "SWIM!", "rgba(37,99,235,.88)");
+  }
+},
+{
+  id: "slalom", name: "Slalom Race", mins: 3, tag: "skill",
+  kit: "8 cones, a ball per lane",
+  why: "Close control, and a queue that is never longer than three because you run two lanes at once.",
+  setup: ["Two lanes side by side, four cones in each, about three paces apart.",
+          "Split into two teams behind the first cone of each lane."],
+  run: ["Weave through the cones with the ball, round the last one, then dribble straight back down the outside.",
+        "Hand the ball to the next player and join the back.",
+        "First team with everyone home wins."],
+  points: ["Little touches through the cones, big touches on the way back — say it like that and they get it.",
+           "Use both feet: outside of the right going right, outside of the left going left.",
+           "If a cone gets knocked, nobody cares. Do not stop the race for it."],
+  more: ["Second run must use only the weaker foot.",
+         "Second run backwards through the cones, pulling the ball with the sole."],
+  draw: function (g, t) {
+    g.grass();
+    [18, 44].forEach(function (y, lane) {
+      var cx = [26, 42, 58, 74];
+      cx.forEach(function (x) { g.cone(x, y); });
+      var wig = [[16, y]]; cx.forEach(function (x, i) { wig.push([x, y + (i % 2 ? 7 : -7)]); });
+      wig.push([82, y], [82, y + 13], [16, y + 13]);
+      g.path(wig, { dash: true, head: true, col: "rgba(255,255,255,.55)" });
+      var p = along(wig, (t + lane * 0.12) % 1);
+      g.player(p[0], p[1], lane ? COL.away : COL.home); g.ball(p[0] + 4, p[1] + 2);
+    });
+    g.player(11, 18, COL.home); g.player(11, 44, COL.away);
+  }
+},
+{
+  id: "knockout", name: "Knockout", mins: 4, tag: "game",
+  kit: "A ball each, cones for a circle",
+  why: "Shielding the ball and looking up at the same time. It is the closest thing to a real 4-a-side moment you can do in a warm-up.",
+  setup: ["A circle of cones, big enough that everyone has a couple of paces of room.",
+          "Everyone inside with a ball."],
+  run: ["Keep your own ball under control while trying to knock everyone else's out of the circle.",
+        "If your ball goes out, you are out — but only until the next round, which starts about twenty seconds later.",
+        "Last one with a ball in the circle wins the round. Play four or five rounds."],
+  points: ["Body between the opponent and your ball. Show them by doing it — stand side on.",
+           "Make the circle smaller each round so the rounds get shorter, not longer.",
+           "Anyone knocked out does keepy-uppies on the outside rather than standing about."],
+  more: ["Two lives each.",
+         "Knocked-out players become defenders who may reach in with one foot from the edge."],
+  draw: function (g, t) {
+    g.grass();
+    g.circle(50, 31, 26); g.circle(50, 31, 26.6);
+    for (var i = 0; i < 10; i++) {
+      var a = i / 10 * Math.PI * 2;
+      g.cone(50 + Math.cos(a) * 26, 31 + Math.sin(a) * 15.5);
+    }
+    var gone = t > 0.62;
+    [[0.05, COL.home], [0.28, COL.home], [0.52, COL.away], [0.78, COL.home]].forEach(function (s, i) {
+      var p = orbit(50, 31, 15 - i * 1.6, 9 - i, t * 1.5 * (i % 2 ? -1 : 1), s[0]);
+      g.player(p[0], p[1], s[1]);
+      if (i === 2 && gone) {
+        var out = win(t, 0.62, 0.95);
+        g.ball(p[0] + 4 + out * 34, p[1] - out * 12);
+      } else g.ball(p[0] + 4.5, p[1] + 2.5);
+    });
+    if (gone) g.tag(50, 58, "OUT!", "rgba(220,38,38,.9)");
+  }
+},
+{
+  id: "passfollow", name: "Pass and Follow", mins: 4, tag: "skill",
+  kit: "3 cones, 1 ball per triangle",
+  why: "The first passing habit worth having: pass it, then go somewhere. Small enough that a seven year old can actually reach the next cone.",
+  setup: ["Three cones in a triangle, about eight paces a side. One group of three or four per triangle.",
+          "One ball, starting at the first cone."],
+  run: ["Pass to the next cone, then run to the cone you passed to.",
+        "Receive, take one touch to settle it, pass on, follow again.",
+        "Go round the triangle one way for a minute, then the other way."],
+  points: ["Inside of the foot, laces down, ankle locked. Show them the shape of the foot.",
+           "Say the name of the person you are passing to. It gets them shouting, which they need in a game.",
+           "One touch to control, one to pass. Two touches. Count them out loud."],
+  more: ["Add a second ball once they can do it — instantly twice as hard and twice as loud.",
+         "Call “SWITCH!” and the direction reverses."],
+  draw: function (g, t) {
+    g.grass();
+    var A = [24, 48], B = [50, 12], C = [76, 48];
+    [A, B, C].forEach(function (c) { g.cone(c[0], c[1]); });
+    g.path([A, B], { dash: true, head: true, col: "rgba(255,255,255,.35)" });
+    g.path([B, C], { dash: true, head: true, col: "rgba(255,255,255,.35)" });
+    g.path([C, A], { dash: true, head: true, col: "rgba(255,255,255,.35)" });
+    var leg = Math.floor(t * 3), sub = (t * 3) % 1;
+    var legs = [[A, B], [B, C], [C, A]], L = legs[leg];
+    var bx = L[0][0] + (L[1][0] - L[0][0]) * Math.min(1, sub * 1.6);
+    var by = L[0][1] + (L[1][1] - L[0][1]) * Math.min(1, sub * 1.6);
+    var px = L[0][0] + (L[1][0] - L[0][0]) * sub * 0.85;
+    var py = L[0][1] + (L[1][1] - L[0][1]) * sub * 0.85;
+    g.player(px - 5, py + 2, COL.home);
+    g.player(L[1][0] - 5, L[1][1] + 2, COL.home);
+    g.ball(bx, by);
+    g.tag(50, 58, "PASS, THEN FOLLOW IT", "rgba(37,99,235,.88)");
+  }
+},
+{
+  id: "piggy", name: "Piggy in the Middle", mins: 4, tag: "skill",
+  kit: "4 cones, 1 ball, bibs help",
+  why: "A three-against-one keeps the ball moving and teaches the two things that matter in 4-a-side: move the ball before the pressure arrives, and move yourself after you have passed.",
+  setup: ["A square about ten paces a side.",
+          "Three players on the edges, one in the middle. Groups of four — if you have five, two in the middle."],
+  run: ["The three on the outside keep the ball away from the one in the middle.",
+        "They may move along the edges of the square but not into it.",
+        "If the middle player wins it, or the ball leaves the square, they swap with whoever gave it away."],
+  points: ["“Can you see two people to pass to?” — ask it constantly rather than telling them where to stand.",
+           "Count passes out loud as a group. Five in a row is a cheer.",
+           "Swap the middle player every thirty seconds whatever happens — nobody should be stuck in there."],
+  more: ["Two touch maximum.",
+         "Make the square smaller for a stronger group, bigger for a struggling one. That is the only dial you need."],
+  draw: function (g, t) {
+    g.grass();
+    g.area(22, 12, 56, 38);
+    [[22, 12], [78, 12], [78, 50], [22, 50]].forEach(function (c) { g.cone(c[0], c[1]); });
+    var P = [[22, 12], [78, 12], [50, 50]];
+    P.forEach(function (p) { g.player(p[0], p[1], COL.home); });
+    var leg = Math.floor(t * 3), sub = (t * 3) % 1;
+    var from = P[leg], to = P[(leg + 1) % 3];
+    var f = Math.min(1, sub * 1.7);
+    g.path([from, to], { dash: true, head: true, col: "rgba(255,255,255,.4)" });
+    g.ball(from[0] + (to[0] - from[0]) * f, from[1] + (to[1] - from[1]) * f);
+    var m = orbit(50, 30, 10, 7, t * 1.4, 0);
+    g.player(m[0], m[1], COL.away, "P");
+  }
+},
+{
+  id: "shoot", name: "Shooting Gallery", mins: 4, tag: "skill",
+  kit: "1 goal, a pile of balls, 2 cones",
+  why: "End the warm-up with shooting. Always. They arrive at the game having already scored, which is worth more than anything technical you could have done instead.",
+  setup: ["One goal. A cone about twelve paces out, off to one side.",
+          "Everyone queued at the cone. You stand beside the goal with the balls."],
+  run: ["You roll a ball out in front of the first player.",
+        "They run onto it and shoot first time, or with one touch then shoot.",
+        "They collect their own ball and rejoin the back of the queue. Keep it rolling — no waiting."],
+  points: ["Laces, not toe. Non-kicking foot beside the ball, head over it.",
+           "Roll the ball slightly ahead of them so they have to run onto it — that is what makes it a shot rather than a pass.",
+           "Cheer every single one, in or out. This is the fun bit, not the assessment bit."],
+  more: ["Two queues, two sides, alternate. Twice the shots.",
+         "Put a keeper in for the last minute — they will all want to be it, so change every three shots."],
+  draw: function (g, t) {
+    g.grass();
+    g.goal(50, 8, 26, "up");
+    g.area(30, 8, 40, 14);
+    g.cone(24, 46); g.cone(24, 52);
+    var run = win(t, 0.05, 0.5), shot = win(t, 0.52, 0.86);
+    var px = 24 + run * 20, py = 46 - run * 12;
+    g.player(px, py, COL.home);
+    g.player(16, 50, COL.home); g.player(11, 55, COL.home);
+    g.player(74, 14, COL.coach, "C");
+    if (shot <= 0) {
+      g.ball(30 + run * 14, 40 - run * 12);
+    } else {
+      g.ball(44 + shot * 4, 28 - shot * 20);
+      g.path([[44, 28], [48, 10]], { col: "rgba(255,209,102,.9)", wide: true });
+    }
+    g.path([[24, 46], [44, 34]], { dash: true, head: true, col: "rgba(255,255,255,.35)" });
+  }
+},
+{
+  id: "freeze", name: "Freeze Tag with Balls", mins: 4, tag: "game",
+  kit: "A ball each, 4 cones",
+  why: "Dribbling, passing and looking around, hidden inside a game of tag. They will not notice they are practising.",
+  setup: ["The same coned box.", "Everyone with a ball except one or two taggers."],
+  run: ["Taggers run around without a ball trying to tag the dribblers.",
+        "If you are tagged you freeze, stand still and hold the ball above your head.",
+        "A team-mate unfreezes you by passing their ball to you. You catch it, roll it back, and you are both playing again.",
+        "Play for ninety seconds, change the taggers, go again."],
+  points: ["Frozen players should shout for help. Make that the rule — it gets the quiet ones talking.",
+           "Taggers tag the person, not the ball. Different game from Sharks; say which one you are playing."],
+  more: ["Frozen players stand with their legs apart instead, and are freed by a pass through the gap."],
+  draw: function (g, t) {
+    g.grass();
+    g.area(12, 8, 76, 46, true);
+    [[12, 8], [88, 8], [88, 54], [12, 54]].forEach(function (c) { g.cone(c[0], c[1]); });
+    var frozen = [30, 20];
+    g.player(frozen[0], frozen[1], "#93c5fd");
+    g.ball(frozen[0], frozen[1] - 7);
+    g.tag(frozen[0], frozen[1] - 12, "HELP!", "rgba(10,22,40,.8)");
+    var helper = [62, 40];
+    g.player(helper[0], helper[1], COL.home);
+    var f = win(t, 0.25, 0.85);
+    g.path([helper, frozen], { dash: true, head: true, col: "rgba(255,255,255,.35)" });
+    g.ball(helper[0] + (frozen[0] - helper[0]) * f - 4, helper[1] + (frozen[1] - helper[1]) * f + 2);
+    var p2 = orbit(70, 20, 12, 8, t, 0); g.player(p2[0], p2[1], COL.home); g.ball(p2[0] + 4.5, p2[1] + 2.5);
+    var tg = orbit(52, 30, 20, 12, t * 1.7, 0.4); g.player(tg[0], tg[1], COL.away, "T");
+  }
+},
+{
+  id: "onevone", name: "1v1 to Two Goals", mins: 5, tag: "game",
+  kit: "4 cones as two goals, a pile of balls",
+  why: "In 4-a-side, a child who will take someone on changes the game. This is where they learn it is allowed. Finish the warm-up here when you want them sharp rather than calm.",
+  setup: ["Two small goals, about twenty paces apart, made of two cones each.",
+          "Two queues, one behind each goal. You stand on the side with the balls."],
+  run: ["You roll a ball into the middle. One player from each queue runs out.",
+        "Whoever gets there first attacks; the other defends. Thirty seconds or a goal, whichever comes first.",
+        "Both jog back to the opposite queue and the next pair goes."],
+  points: ["Fast turnaround. The next ball goes in the second the last one ends.",
+           "Tell the attacker to run at the defender's feet, then go past. Most of them will stop a yard short and pass; that is the habit to break here.",
+           "Defenders: side on, small steps, do not dive in. One sentence, said once."],
+  more: ["Winner stays on for one more.",
+         "2v1 — two attackers, one defender — if they need the confidence."],
+  draw: function (g, t) {
+    g.grass();
+    g.goal(50, 8, 22, "up");
+    g.goal(50, 54, 22, "down");
+    var atk = along([[50, 44], [42, 34], [56, 26], [50, 14]], win(t, 0.08, 0.82));
+    var def = along([[50, 22], [46, 28], [54, 32], [52, 22]], win(t, 0.08, 0.9));
+    g.player(def[0], def[1], COL.away, "D");
+    g.player(atk[0], atk[1], COL.home, "A");
+    g.ball(atk[0] + 3, atk[1] - 4);
+    g.player(86, 30, COL.coach, "C");
+    g.path([[82, 30], [58, 34]], { dash: true, head: true, col: "rgba(255,255,255,.3)" });
+    g.player(38, 58, COL.home); g.player(62, 4, COL.away);
+  }
+}
+];
+
+var PRESETS = [
+  { name: "First Saturday", ids: ["jog", "lights", "sharks", "onevone"] },
+  { name: "Ball mastery", ids: ["toe", "lights", "body", "slalom", "knockout"] },
+  { name: "Passing day", ids: ["jog", "passfollow", "piggy", "shoot"] },
+  { name: "Just let them play", ids: ["toe", "freeze", "sharks", "onevone"] }
+];
+
+/* ====================================================== the drawing loop
+   One animation frame for the whole page. Any canvas that is registered and
+   currently on screen gets redrawn; anything scrolled away or removed from
+   the document costs nothing. */
+var ANIM = [], LOOP = 6.5;
+function regAnim(cv, drill, loopSecs) {
+  ANIM.push({ cv: cv, drill: drill, loop: loopSecs || LOOP });
+  return cv;
+}
+(function frame(now) {
+  requestAnimationFrame(frame);
+  var dpr = Math.min(2, window.devicePixelRatio || 1), h = window.innerHeight;
+  for (var i = ANIM.length - 1; i >= 0; i--) {
+    var a = ANIM[i];
+    if (!a.cv.isConnected) { ANIM.splice(i, 1); continue; }
+    var r = a.cv.getBoundingClientRect();
+    if (!r.width || !r.height || r.bottom < -60 || r.top > h + 60) continue;
+    var W = Math.round(r.width * dpr), H = Math.round(r.height * dpr);
+    if (a.cv.width !== W || a.cv.height !== H) { a.cv.width = W; a.cv.height = H; }
+    var ctx = a.cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var t = ((now || 0) / 1000 / a.loop) % 1;
+    try { a.drill.draw(gfx(ctx, r.width, r.height), t); } catch (e) {}
+  }
+})(0);
+
+/* ===================================================== the warm-up half */
+var TARGET = 15 * 60;
+var sess = load("sess", ["jog", "lights", "sharks", "onevone"]);
+var byId = {}; DRILLS.forEach(function (d) { byId[d.id] = d; });
+sess = sess.filter(function (id) { return byId[id]; });
+
+function sessSecs() {
+  return sess.reduce(function (n, id) { return n + byId[id].mins * 60; }, 0);
+}
+function toggleDrill(id) {
+  var i = sess.indexOf(id);
+  if (i >= 0) sess.splice(i, 1); else sess.push(id);
+  save("sess", sess); renderWarm();
+}
+
+function renderWarm() {
+  var pane = $("#paneWarm");
+  pane.textContent = "";
+
+  pane.appendChild(el("div", { class: "sect" }, [
+    el("h2", { text: "Warm-up and skills" }),
+    el("p", { class: "lead", html: "The horn gives you <b>fifteen minutes</b> before the game. Build them here, then hit <b>Run it</b> and the phone keeps the time for you." })
+  ]));
+
+  /* --- the session you are building --------------------------------- */
+  var secs = sessSecs(), over = secs > TARGET;
+  var bar = el("div", { class: "plan-bar" });
+  bar.appendChild(el("div", { class: "top" }, [
+    el("b", { text: "Today's fifteen" }),
+    el("span", { class: "total" + (over ? " over" : ""),
+      text: Math.round(secs / 60) + " of 15 min" })
+  ]));
+  bar.appendChild(el("div", { class: "meter" }, [
+    el("i", { class: over ? "over" : "", style: "width:" + Math.min(100, secs / TARGET * 100) + "%" })
+  ]));
+  var chips = el("div", { class: "chips" });
+  if (!sess.length) chips.appendChild(el("span", { class: "note", text: "Nothing picked yet — tap a drill below, or choose a ready-made fifteen." }));
+  sess.forEach(function (id, i) {
+    var d = byId[id];
+    chips.appendChild(el("span", { class: "chip" }, [
+      el("span", { text: (i + 1) + ". " }),
+      el("b", { text: d.name }),
+      el("span", { class: "note", text: d.mins + "m" }),
+      el("x", { text: "×", onclick: function () { toggleDrill(id); } })
+    ]));
+  });
+  bar.appendChild(chips);
+  var pre = el("div", { class: "presets" });
+  PRESETS.forEach(function (p) {
+    pre.appendChild(el("button", { text: p.name, onclick: function () {
+      sess = p.ids.slice(); save("sess", sess); renderWarm();
+    } }));
+  });
+  pre.appendChild(el("button", { text: "Clear", onclick: function () {
+    sess = []; save("sess", sess); renderWarm();
+  } }));
+  bar.appendChild(pre);
+  bar.appendChild(el("button", {
+    class: "btn go wide", style: "margin-top:.7rem",
+    text: sess.length ? "▶  Run it — " + Math.round(secs / 60) + " min" : "Pick some drills first",
+    disabled: sess.length ? null : "disabled",
+    onclick: function () { openRunner(); }
+  }));
+  pane.appendChild(bar);
+
+  /* --- the library --------------------------------------------------- */
+  var grid = el("div", { class: "grid" });
+  DRILLS.forEach(function (d) {
+    var on = sess.indexOf(d.id) >= 0;
+    var cv = el("canvas");
+    regAnim(cv, d);
+    var card = el("div", { class: "drill" + (on ? " on" : "") }, [
+      el("div", { style: "position:relative" }, [
+        cv,
+        el("button", {
+          style: "position:absolute;top:.4rem;right:.4rem;width:30px;height:30px;border-radius:99px;" +
+                 "background:" + (on ? "#2f9e44" : "rgba(10,22,40,.75)") + ";border:1px solid rgba(255,255,255,.28);" +
+                 "font-weight:800;color:#fff;line-height:1",
+          text: on ? "✓" : "+",
+          "aria-label": (on ? "Remove " : "Add ") + d.name,
+          onclick: function (e) { e.stopPropagation(); toggleDrill(d.id); }
+        })
+      ]),
+      el("div", { class: "meta" }, [
+        el("h3", { text: d.name }),
+        el("div", { class: "sub" }, [
+          el("span", { class: "pill " + d.tag, text: d.tag === "warm" ? "warm-up" : d.tag }),
+          el("span", { text: d.mins + " min" }),
+          el("span", { class: "add", text: "Details ›" })
+        ])
+      ])
+    ]);
+    card.addEventListener("click", function () { openDrill(d); });
+    grid.appendChild(card);
+  });
+  pane.appendChild(grid);
+}
+
+/* --- the detail sheet ------------------------------------------------- */
+function closeSheet() { $("#sheet").textContent = ""; }
+function openDrill(d) {
+  var host = $("#sheet");
+  host.textContent = "";
+  var on = sess.indexOf(d.id) >= 0;
+  function list(title, arr, ordered) {
+    if (!arr || !arr.length) return null;
+    var ul = el(ordered ? "ol" : "ul", {});
+    arr.forEach(function (s) { ul.appendChild(el("li", { html: s })); });
+    return el("div", {}, [el("h4", { text: title }), ul]);
+  }
+  var cv = el("canvas"); regAnim(cv, d);
+  var inner = el("div", { class: "inner" }, [
+    el("div", { class: "grab" }, [el("i", {})]),
+    el("div", { style: "display:flex;gap:.5rem;align-items:center" }, [
+      el("span", { class: "pill " + d.tag, text: d.tag === "warm" ? "warm-up" : d.tag }),
+      el("span", { class: "note", text: d.mins + " min · " + d.kit })
+    ]),
+    el("h2", { text: d.name }),
+    el("p", { class: "note", html: d.why }),
+    cv,
+    list("Set it up", d.setup),
+    list("How it runs", d.run, true),
+    list("What to say", d.points),
+    list("If it is going well", d.more),
+    el("div", { class: "foot" }, [
+      el("div", { class: "row" }, [
+        el("button", {
+          class: "btn " + (on ? "warn" : "go"),
+          text: on ? "Remove from today" : "Add to today",
+          onclick: function () { toggleDrill(d.id); closeSheet(); }
+        }),
+        el("button", { class: "btn ghost", text: "Close", onclick: closeSheet })
+      ])
+    ])
+  ]);
+  var sh = el("div", { class: "sheet", onclick: function (e) { if (e.target === sh) closeSheet(); } }, [inner]);
+  host.appendChild(sh);
+}
+
+/* --- running the fifteen minutes -------------------------------------- */
+var run = null;
+function openRunner() {
+  beep(1, 660);
+  run = { i: 0, endAt: Date.now() + byId[sess[0]].mins * 60000, left: byId[sess[0]].mins * 60, going: true, warned: false };
+  wakeWanted = true; wake(true);
+  drawRunner();
+  if (run.timer) clearInterval(run.timer);
+  run.timer = setInterval(tickRunner, 250);
+}
+function closeRunner() {
+  if (run && run.timer) clearInterval(run.timer);
+  run = null; wakeWanted = false; wake(false);
+  $("#runner").textContent = "";
+}
+function runnerLeft() {
+  if (!run) return 0;
+  return run.going ? Math.max(0, (run.endAt - Date.now()) / 1000) : run.left;
+}
+function tickRunner() {
+  if (!run) return;
+  var left = runnerLeft();
+  if (run.going && left <= 10 && !run.warned) { run.warned = true; beep(2, 700); }
+  if (run.going && left <= 0) return nextDrill(true);
+  var big = $("#runClock");
+  if (big) {
+    big.textContent = mmss(left);
+    big.className = "big" + (left <= 10 ? " low" : "");
+  }
+}
+function nextDrill(auto) {
+  if (!run) return;
+  if (auto) beep(3, 520);
+  if (run.i >= sess.length - 1) { closeRunner(); return; }
+  run.i++; run.warned = false;
+  run.left = byId[sess[run.i]].mins * 60;
+  run.endAt = Date.now() + run.left * 1000;
+  run.going = true;
+  drawRunner();
+}
+function drawRunner() {
+  var host = $("#runner"); host.textContent = "";
+  if (!run) return;
+  var d = byId[sess[run.i]];
+  var cv = el("canvas"); regAnim(cv, d);
+  var restLabel = sess.slice(run.i + 1).map(function (id) { return byId[id].name; }).join(" · ");
+  host.appendChild(el("div", { class: "runner" }, [
+    el("div", { class: "head" }, [
+      el("span", { class: "pill " + d.tag, text: d.tag === "warm" ? "warm-up" : d.tag }),
+      el("span", { class: "of", text: "Drill " + (run.i + 1) + " of " + sess.length }),
+      el("button", { class: "btn ghost", style: "margin-left:auto;padding:.4rem .7rem",
+        text: "End", onclick: closeRunner })
+    ]),
+    el("h2", { text: d.name }),
+    el("div", { id: "runClock", class: "big", text: mmss(runnerLeft()) }),
+    cv,
+    el("p", { class: "pts", html: "<b>Say:</b> " + d.points[0] }),
+    restLabel ? el("p", { class: "pts", text: "Next: " + restLabel }) : null,
+    el("div", { class: "spacer" }),
+    el("div", { class: "ctl" }, [
+      el("button", { class: "btn", id: "runPause", text: run.going ? "Pause" : "▶ Resume",
+        onclick: function () {
+          if (run.going) { run.left = runnerLeft(); run.going = false; }
+          else { run.endAt = Date.now() + run.left * 1000; run.going = true; }
+          $("#runPause").textContent = run.going ? "Pause" : "▶ Resume";
+          var c = $("#runClock"); if (c) c.style.opacity = run.going ? "1" : ".55";
+        } }),
+      el("button", { class: "btn pri",
+        text: run.i >= sess.length - 1 ? "Finish" : "Next drill ›",
+        onclick: function () { nextDrill(false); } })
+    ])
+  ]));
+}
+
+/* =========================================================== match day
+   A 4-a-side game is 2 x 18 minutes with a 4 minute half-time. Four on the
+   pitch, one of them in goal, and anywhere between four and eight children
+   on the touchline wanting to know when it is their turn.
+
+   The plan is worked out as a grid of shifts. At each shift the four with
+   the fewest minutes so far go on, and of those four the one who has spent
+   least time in goal goes in goal. Doing it by "fewest so far" rather than
+   by a fixed rotation means the plan survives a child arriving late, going
+   off with a bumped knee or needing the loo: re-plan from the clock and the
+   remaining shifts quietly even everything back up.
+   ====================================================================== */
+
+var squad = load("squad", []);
+var cfg = load("cfg", { halves: 2, halfMin: 18, htMin: 4, shifts: 4, onField: 4 });
+var nextPid = load("nextPid", 1);
+
+function saveSquad() { save("squad", squad); }
+function tidySquad() {
+  var n = squad.length;
+  squad = squad.filter(function (p) { return p.name.trim(); });
+  if (squad.length !== n) saveSquad();
+}
+function addPlayer(name) {
+  var p = { id: nextPid++, name: name || "", on: true, gk: true };
+  squad.push(p); save("nextPid", nextPid); saveSquad();
+  return p;
+}
+function available() { return squad.filter(function (p) { return p.on && p.name.trim(); }); }
+
+/* --------------------------------------------------------- the planner */
+
+/* The shifts of the match, as windows on the clock. From a standing start
+   that is each half cut into equal pieces. After an early change it is the
+   rest of the current half shared between the shifts that are left, and
+   then whole halves after that. */
+function planWindows(conf, fromT, remainInHalf) {
+  var halfSec = conf.halfMin * 60, W = [];
+  fromT = fromT || 0;
+  for (var h = 0; h < conf.halves; h++) {
+    var hs = h * halfSec, he = hs + halfSec;
+    if (he <= fromT + 0.001) continue;
+    var start = Math.max(hs, fromT);
+    var n = start > hs + 0.001 ? Math.max(1, remainInHalf || 1) : conf.shifts;
+    var span = (he - start) / n;
+    for (var s = 0; s < n; s++) W.push({ half: h, start: start + s * span, end: start + (s + 1) * span });
+  }
+  return W;
+}
+
+/* Fill those windows. seed carries the minutes already served, so a plan
+   made in the middle of a game knows who is owed time. k0 keeps the
+   tie-break walking round the squad rather than restarting at the top. */
+function buildPlan(players, conf, windows, seed, k0) {
+  var N = players.length;
+  if (!N || !windows || !windows.length) return [];
+  var F = Math.min(conf.onField, N);
+  var played = {}, gkSec = {}, idx = {};
+  players.forEach(function (p, i) {
+    idx[p.id] = i;
+    played[p.id] = (seed && seed.played[p.id]) || 0;
+    gkSec[p.id] = (seed && seed.gk[p.id]) || 0;
+  });
+  var segs = [], lastGk = (seed && seed.lastGk) || null, onNow = {};
+  (seed && seed.onNow || []).forEach(function (id) { onNow[id] = true; });
+
+  windows.forEach(function (w, j) {
+    var k = (k0 || 0) + j, len = w.end - w.start;
+
+    /* who goes on: fewest minutes first, then whoever is having a rest,
+       then a tie-break that walks round the squad so the same names do not
+       always win the coin toss */
+    var order = players.slice().sort(function (a, b) {
+      return (played[a.id] - played[b.id]) ||
+             ((onNow[a.id] ? 1 : 0) - (onNow[b.id] ? 1 : 0)) ||
+             (((idx[a.id] + k) % N) - ((idx[b.id] + k) % N));
+    });
+    var on = order.slice(0, F);
+
+    /* somebody out there has to be willing to go in goal */
+    if (!on.some(function (p) { return p.gk; })) {
+      var swap = order.slice(F).filter(function (p) { return p.gk; })[0];
+      if (swap) on[F - 1] = swap;
+    }
+
+    /* and of those, whoever has had least of it */
+    var kOrder = on.filter(function (p) { return p.gk; });
+    if (!kOrder.length) kOrder = on.slice();
+    kOrder.sort(function (a, b) {
+      return (gkSec[a.id] - gkSec[b.id]) ||
+             ((a.id === lastGk ? 1 : 0) - (b.id === lastGk ? 1 : 0)) ||
+             (((idx[a.id] + k) % N) - ((idx[b.id] + k) % N));
+    });
+    var gk = kOrder[0];
+
+    var onIds = on.map(function (p) { return p.id; });
+    segs.push({
+      half: w.half, start: w.start, end: w.end, on: onIds, gk: gk.id,
+      off: players.filter(function (p) { return onIds.indexOf(p.id) < 0; })
+                  .map(function (p) { return p.id; })
+    });
+    onNow = {}; onIds.forEach(function (id) { onNow[id] = true; });
+    onIds.forEach(function (id) { played[id] += len; });
+    gkSec[gk.id] += len;
+    lastGk = gk.id;
+  });
+  return segs;
+}
+
+/* minutes actually served, reading the plan up to a moment on the clock */
+function tally(segs, upto, ids) {
+  var played = {}, gk = {};
+  (ids || []).forEach(function (id) { played[id] = 0; gk[id] = 0; });
+  segs.forEach(function (s) {
+    var len = Math.max(0, Math.min(s.end, upto) - s.start);
+    if (len <= 0) return;
+    s.on.forEach(function (id) { played[id] = (played[id] || 0) + len; });
+    gk[s.gk] = (gk[s.gk] || 0) + len;
+  });
+  return { played: played, gk: gk };
+}
+
+function nameOf(id) {
+  for (var i = 0; i < squad.length; i++) if (squad[i].id === id) return squad[i].name.trim() || "?";
+  return "?";
+}
+function firstNames(ids) { return ids.map(nameOf).join(", "); }
+
+/* ==================================================== match-day setup UI
+   The squad list is built once and then edited in place. It used to be
+   thrown away and rebuilt whenever anything changed, which meant that
+   tapping from one name box to the next destroyed the box you were leaving
+   mid-tap: on a phone the keyboard shut and the tap landed on nothing. Now
+   a name box lives as long as the player does, and only the count, the
+   shift labels and the plan below are redrawn while you type. */
+var MD = null, planTimer = null;
+
+function schedulePlan() { clearTimeout(planTimer); planTimer = setTimeout(refreshPlan, 250); }
+
+function nameRow(p) {
+  var row = el("div", { class: "pl" + (p.on ? "" : " out") });
+  var inp = el("input", { type: "text", value: p.name, placeholder: "Name",
+    autocomplete: "off", autocorrect: "off", spellcheck: "false",
+    autocapitalize: "words", enterkeyhint: "next" });
+  inp.addEventListener("input", function () { p.name = inp.value; saveSquad(); schedulePlan(); });
+  inp.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    /* Enter walks down the list, and makes a new name box at the bottom, so
+       a whole squad goes in without touching the screen again */
+    var boxes = Array.prototype.slice.call(MD.list.querySelectorAll("input"));
+    var next = boxes[boxes.indexOf(inp) + 1];
+    if (next) { next.focus(); next.select(); }
+    else { newNameRow(); }
+  });
+  row.appendChild(inp);
+
+  var here = el("button", { class: "tog", text: "HERE", "aria-pressed": String(!!p.on) });
+  here.addEventListener("click", function () {
+    p.on = !p.on; saveSquad();
+    here.setAttribute("aria-pressed", String(!!p.on));
+    row.className = "pl" + (p.on ? "" : " out");
+    refreshPlan();
+  });
+  row.appendChild(here);
+
+  var keeps = el("button", { class: "tog gk", text: "GK", "aria-pressed": String(!!p.gk) });
+  keeps.addEventListener("click", function () {
+    p.gk = !p.gk; saveSquad();
+    keeps.setAttribute("aria-pressed", String(!!p.gk));
+    refreshPlan();
+  });
+  row.appendChild(keeps);
+
+  row.appendChild(el("button", { class: "del", text: "\u00d7", "aria-label": "Remove " + (p.name || "player"),
+    onclick: function () {
+      squad = squad.filter(function (q) { return q !== p; });
+      saveSquad(); row.remove(); refreshPlan();
+    } }));
+  return row;
+}
+
+function newNameRow(name) {
+  var p = addPlayer(name || "");
+  var row = nameRow(p);
+  MD.list.appendChild(row);
+  refreshPlan();
+  var inp = row.querySelector("input");
+  if (inp) inp.focus();
+  return p;
+}
+
+function renderMatch() {
+  var pane = $("#paneMatch");
+  pane.textContent = "";
+  MD = {};
+
+  pane.appendChild(el("div", { class: "sect" }, [
+    el("h2", { text: "Match day" }),
+    el("p", { class: "lead", html: "Four a side, one of them in goal. Type the squad, check the shape of the game, then kick off \u2014 the phone will tell you who comes off and who goes on, and put everybody in goal in turn." })
+  ]));
+
+  MD.resume = el("div", {});
+  pane.appendChild(MD.resume);
+
+  /* --- squad --------------------------------------------------------- */
+  MD.hereCount = el("span", { class: "note", style: "margin-left:auto" });
+  var box = el("div", { class: "card", style: "padding:.85rem;margin-top:.7rem" }, [
+    el("div", { style: "display:flex;align-items:baseline;gap:.5rem" }, [
+      el("h3", { text: "Squad", style: "font-size:1.05rem" }), MD.hereCount
+    ]),
+    el("p", { class: "note", style: "margin:.35rem 0 .1rem",
+      html: "<b>HERE</b> is who turned up. <b>GK</b> is who is happy to go in goal \u2014 turn it off for anyone who really is not. Press return to drop to the next name." })
+  ]);
+
+  MD.list = el("div", { class: "roster" });
+  squad.forEach(function (p) { MD.list.appendChild(nameRow(p)); });
+  box.appendChild(MD.list);
+
+  MD.ta = el("textarea", {
+    rows: "3", placeholder: "Paste or type names, one per line",
+    autocapitalize: "words", spellcheck: "false",
+    style: "width:100%;background:#0d1e35;border:1px solid var(--line);border-radius:11px;" +
+           "padding:.55rem .7rem;color:var(--ink);font:inherit;resize:vertical;margin-top:.5rem"
+  });
+  box.appendChild(el("div", { class: "row", style: "margin-top:.5rem" }, [
+    el("button", { class: "btn", text: "+ Add a player", onclick: function () { newNameRow(); } }),
+    el("button", { class: "btn ghost", text: "Paste a list", onclick: function () {
+      MD.ta.style.display = MD.ta.style.display === "block" ? "none" : "block";
+      if (MD.ta.style.display === "block") MD.ta.focus();
+    } })
+  ]));
+  MD.ta.style.display = squad.length ? "none" : "block";
+  function takeList() {
+    var names = MD.ta.value.split(/[\n,]/).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!names.length) return;
+    names.forEach(function (n) {
+      var p = addPlayer(n);
+      MD.list.appendChild(nameRow(p));
+    });
+    MD.ta.value = ""; MD.ta.style.display = "none"; refreshPlan();
+  }
+  MD.ta.addEventListener("change", takeList);
+  MD.ta.addEventListener("blur", takeList);
+  box.appendChild(MD.ta);
+  pane.appendChild(box);
+
+  /* --- the shape of the game ----------------------------------------- */
+  var set = el("div", { class: "card", style: "padding:.85rem;margin-top:.7rem" }, [
+    el("h3", { text: "The game", style: "font-size:1.05rem" })
+  ]);
+  function stepper(label, key, min, max, step, unit) {
+    var b = el("b", { text: cfg[key] + (unit || "") });
+    function bump(d) {
+      cfg[key] = Math.max(min, Math.min(max, cfg[key] + d));
+      b.textContent = cfg[key] + (unit || "");
+      save("cfg", cfg); refreshPlan();
+    }
+    return el("div", { class: "field" }, [
+      el("label", { text: label }),
+      el("div", { class: "ctl" }, [el("div", { class: "stepper" }, [
+        el("button", { text: "\u2212", "aria-label": "less", onclick: function () { bump(-step); } }),
+        b,
+        el("button", { text: "+", "aria-label": "more", onclick: function () { bump(step); } })
+      ])])
+    ]);
+  }
+  set.appendChild(stepper("Half length", "halfMin", 5, 45, 1, " min"));
+  set.appendChild(stepper("Half-time", "htMin", 0, 15, 1, " min"));
+
+  MD.shiftRow = el("div", { class: "seg" });
+  set.appendChild(el("div", { class: "field" }, [
+    el("label", { text: "Shifts per half" }), el("div", { class: "ctl" }, [MD.shiftRow])
+  ]));
+
+  MD.fieldRow = el("div", { class: "seg" });
+  [3, 4, 5].forEach(function (n) {
+    MD.fieldRow.appendChild(el("button", { text: n + " a side", "aria-pressed": String(cfg.onField === n),
+      onclick: function () { cfg.onField = n; save("cfg", cfg); refreshPlan(); } }));
+  });
+  set.appendChild(el("div", { class: "field" }, [
+    el("label", { text: "On the pitch" }), el("div", { class: "ctl" }, [MD.fieldRow])
+  ]));
+  pane.appendChild(set);
+
+  MD.planBox = el("div", {});
+  pane.appendChild(MD.planBox);
+  refreshPlan();
+}
+
+/* Everything below the squad list, redrawn whenever the squad or the shape
+   of the game changes. Never touches the name boxes. */
+function refreshPlan() {
+  if (!MD) return;
+  var pl = available();
+  MD.hereCount.textContent = plural(pl.length, "player") + " here today";
+  MD.ta.style.display = squad.length ? MD.ta.style.display : "block";
+
+  /* a game left half-played, offered back */
+  MD.resume.textContent = "";
+  var saved = load("live", null);
+  if (saved && !saved.done && saved.segs && saved.segs.length && Date.now() - saved.at < 6 * 3600e3) {
+    MD.resume.appendChild(el("div", { class: "card",
+      style: "padding:.8rem;margin-top:.7rem;border-color:var(--grass)" }, [
+      el("div", { class: "note", html: "There is a game in progress \u2014 <b>" + mmss(saved.t) + "</b> played." }),
+      el("div", { class: "row", style: "margin-top:.55rem" }, [
+        el("button", { class: "btn go", text: "Back to the game",
+          onclick: function () { resumeMatch(saved); } }),
+        el("button", { class: "btn ghost", text: "Forget it",
+          onclick: function () { save("live", null); refreshPlan(); } })
+      ])
+    ]));
+  }
+
+  /* How evenly a shift count divides today depends on how many turned up:
+     six children share four shirts perfectly in threes, five or seven do
+     not. Rather than choose for the coach, show what each one costs. */
+  function spreadFor(n) {
+    if (pl.length < cfg.onField) return null;
+    var c = { halves: cfg.halves, halfMin: cfg.halfMin, shifts: n, onField: cfg.onField };
+    var ss = buildPlan(pl, c, planWindows(c, 0));
+    var tt = tally(ss, cfg.halves * cfg.halfMin * 60, pl.map(function (p) { return p.id; }));
+    var m = pl.map(function (p) { return tt.played[p.id] / 60; });
+    var gg = pl.map(function (p) { return tt.gk[p.id]; });
+    return { d: Math.max.apply(null, m) - Math.min.apply(null, m),
+             noGoal: gg.filter(function (x) { return x < 1; }).length };
+  }
+  MD.shiftRow.textContent = "";
+  [2, 3, 4, 6].forEach(function (n) {
+    var s = spreadFor(n);
+    var sub = !s ? "" : s.noGoal ? "no goal for " + s.noGoal
+            : s.d < 0.1 ? "dead even" : "\u00b1" + (Math.round(s.d * 10) / 10) + "m";
+    MD.shiftRow.appendChild(el("button", {
+      html: n + " \u00d7 " + (Math.round(cfg.halfMin * 60 / n / 6) / 10) + "m" +
+            (sub ? "<small>" + sub + "</small>" : ""),
+      "aria-pressed": String(cfg.shifts === n),
+      onclick: function () { cfg.shifts = n; save("cfg", cfg); refreshPlan(); }
+    }));
+  });
+  Array.prototype.slice.call(MD.fieldRow.children).forEach(function (b, i) {
+    b.setAttribute("aria-pressed", String(cfg.onField === [3, 4, 5][i]));
+  });
+
+  /* --- the plan ------------------------------------------------------- */
+  MD.planBox.textContent = "";
+  if (pl.length < cfg.onField) {
+    MD.planBox.appendChild(el("p", { class: "note", style: "margin:1rem 0 2rem",
+      text: "Type at least " + cfg.onField + " names, marked HERE, and the plan will appear." }));
+    return;
+  }
+  var segs = buildPlan(pl, cfg, planWindows(cfg, 0));
+  var total = cfg.halves * cfg.halfMin * 60;
+  var sum = tally(segs, total, pl.map(function (p) { return p.id; }));
+  var mins = pl.map(function (p) { return sum.played[p.id] / 60; });
+  var lo = Math.min.apply(null, mins), hi = Math.max.apply(null, mins);
+
+  var plan = el("div", { class: "card", style: "padding:.85rem;margin-top:.7rem" });
+  plan.appendChild(el("div", { style: "display:flex;align-items:baseline;gap:.5rem" }, [
+    el("h3", { text: "The plan", style: "font-size:1.05rem" }),
+    el("span", { class: "note", style: "margin-left:auto",
+      text: (Math.round(lo) === Math.round(hi) ? Math.round(lo) + " min each"
+             : Math.round(lo) + "\u2013" + Math.round(hi) + " min each") })
+  ]));
+  plan.appendChild(el("p", { class: "note", style: "margin:.3rem 0 .6rem",
+    html: plural(pl.length, "player") + " \u00b7 " + cfg.halves + " \u00d7 " + cfg.halfMin +
+      " min \u00b7 a change every " + (Math.round(cfg.halfMin * 60 / cfg.shifts / 6) / 10) + " min" +
+      (hi - lo > 0.1 ? " \u00b7 <b>split " + Math.round((hi - lo) * 10) / 10 + " min</b>" : "") }));
+
+  var tl = el("div", { class: "tl" });
+  pl.forEach(function (p) {
+    var bar = el("div", { class: "bar" });
+    segs.forEach(function (s) {
+      var on = s.on.indexOf(p.id) >= 0, isGk = s.gk === p.id;
+      bar.appendChild(el("i", { class: isGk ? "gk" : on ? "on" : "",
+        style: "flex:1", title: mmss(s.start) + " " + (isGk ? "in goal" : on ? "on" : "off") }));
+    });
+    tl.appendChild(el("div", { class: "r" }, [
+      el("span", { class: "nm", text: p.name.trim() }),
+      bar,
+      el("span", { class: "mins", html: "<b>" + Math.round(sum.played[p.id] / 60) + "</b>&prime;" })
+    ]));
+  });
+  plan.appendChild(tl);
+  plan.appendChild(el("div", { class: "legend" }, [
+    el("span", { html: "<s style='background:#2f9e44'></s>on the pitch" }),
+    el("span", { html: "<s style='background:#ffd166'></s>in goal" }),
+    el("span", { html: "<s style='background:#1e3350'></s>resting" })
+  ]));
+  plan.appendChild(el("p", { class: "note", style: "margin:.6rem 0 0",
+    text: "In goal: " + pl.map(function (p) {
+      return p.name.trim() + " " + Math.round(sum.gk[p.id] / 60) + "\u2032"; }).join(" \u00b7 ") }));
+
+  /* with more children than shifts, somebody misses out on goal altogether */
+  var noGoal = pl.filter(function (p) { return sum.gk[p.id] < 1; });
+  if (noGoal.length) {
+    plan.appendChild(el("p", { class: "note", style: "margin:.45rem 0 0;color:var(--gold)",
+      html: "\u26a0 " + firstNames(noGoal.map(function (p) { return p.id; })) +
+        (noGoal.length === 1 ? " never gets" : " never get") +
+        " a turn in goal \u2014 there are more players than shifts. Pick more shifts per half." }));
+  }
+  var willing = pl.filter(function (p) { return p.gk; }).length;
+  if (willing < 2) {
+    plan.appendChild(el("p", { class: "note", style: "margin:.45rem 0 0;color:var(--gold)",
+      html: "\u26a0 Only " + (willing ? "one player is" : "nobody is") +
+        " marked GK, so the plan keeps " + (willing ? "them" : "whoever is on") +
+        " in goal far longer than anyone else. Turn GK on for a few more." }));
+  }
+  plan.appendChild(el("button", { class: "btn go wide", style: "margin-top:.8rem",
+    text: "\u25b6  Kick off", onclick: function () { startMatch(segs); } }));
+  MD.planBox.appendChild(plan);
+  MD.planBox.appendChild(el("p", { class: "note", style: "margin:.8rem 0 1.5rem",
+    html: "Nothing is fixed. During the game you can sub early, take a player off or add a late arrival, and the rest of the plan is worked out again from the clock." }));
+}
+
+/* ================================================== the game, live
+   One screen, held in one hand, readable at arm's length while you are
+   looking at the pitch and not at the phone. */
+var M = null, MTIMER = null;
+var SPOTS = {
+  3: [[50, 82], [30, 48], [70, 48]],
+  4: [[50, 82], [24, 54], [76, 54], [50, 26]],
+  5: [[50, 83], [22, 58], [78, 58], [36, 28], [64, 28]]
+};
+function halfSec() { return cfg.halfMin * 60; }
+function totalSec() { return cfg.halves * halfSec(); }
+function elapsed() { return M ? M.t + (M.running ? (Date.now() - M.runFrom) / 1000 : 0) : 0; }
+function segAt(t) {
+  for (var i = 0; i < M.segs.length; i++) if (t >= M.segs[i].start - 0.001 && t < M.segs[i].end - 0.001) return i;
+  return Math.max(0, M.segs.length - 1);
+}
+function saveMatch() {
+  if (!M) return save("live", null);
+  save("live", { segs: M.segs, t: elapsed(), half: M.half, ht: M.ht,
+    htLeft: M.ht ? Math.max(0, (M.htEnd - Date.now()) / 1000) : 0,
+    done: M.done, at: Date.now() });
+}
+
+function startMatch(segs) {
+  beep(1, 660);
+  M = { segs: segs, t: 0, running: false, runFrom: 0, half: 0, ht: false,
+        htEnd: 0, done: false, curSeg: 0, alert: null };
+  openLive();
+}
+function resumeMatch(s) {
+  M = { segs: s.segs, t: s.t, running: false, runFrom: 0,
+        half: Math.min(cfg.halves - 1, Math.floor(s.t / halfSec() + 1e-9)),
+        ht: !!s.ht, htEnd: Date.now() + (s.htLeft || 0) * 1000,
+        done: !!s.done, curSeg: 0, alert: null };
+  M.curSeg = segAt(M.t);
+  openLive();
+}
+function closeLive(keep) {
+  if (MTIMER) clearInterval(MTIMER); MTIMER = null;
+  if (keep) saveMatch(); else save("live", null);
+  M = null; wakeWanted = false; wake(false);
+  $("#live").textContent = "";
+  tidySquad(); renderMatch();
+}
+
+function openLive() {
+  var host = $("#live"); host.textContent = "";
+  var pitch = el("div", { class: "pitch", id: "lvPitch" });
+  pitch.appendChild(el("div", { class: "lines", html:
+    '<svg viewBox="0 0 100 112" preserveAspectRatio="none" style="width:100%;height:100%">' +
+    '<g fill="none" stroke="rgba(255,255,255,.42)" stroke-width="0.8">' +
+    '<rect x="2" y="2" width="96" height="108"/>' +
+    '<line x1="2" y1="18" x2="98" y2="18"/>' +
+    '<circle cx="50" cy="18" r="13"/>' +
+    '<rect x="26" y="88" width="48" height="22"/>' +
+    '<rect x="38" y="102" width="24" height="8"/>' +
+    '<line x1="38" y1="110" x2="62" y2="110" stroke="rgba(255,255,255,.9)" stroke-width="2"/>' +
+    '</g></svg>' }));
+
+  host.appendChild(el("div", { class: "live" }, [
+    el("div", { class: "bar" }, [
+      el("span", { class: "half", id: "lvHalf", text: "1ST HALF" }),
+      el("span", { class: "note", id: "lvMeta" }),
+      el("button", { class: "btn ghost", style: "margin-left:auto;padding:.4rem .7rem",
+        text: "Close", onclick: function () { closeLive(!M.done); } })
+    ]),
+    el("div", { class: "clock", id: "lvClock", text: "0:00" }),
+    el("div", { class: "subclock", id: "lvSub" }),
+    el("div", { id: "lvAlert" }),
+    pitch,
+    el("div", { class: "bench", id: "lvBench" }),
+    el("div", { class: "ctl" }, [
+      el("button", { class: "btn go", id: "lvStart", text: "▶ Start", onclick: toggleClock }),
+      el("button", { class: "btn", id: "lvSubNow", text: "Sub now", onclick: function () {
+        if (!M || M.done || M.ht) return;
+        replanFrom(elapsed(), true); saveMatch(); paintLive();
+      } })
+    ]),
+    el("div", { class: "ctl2" }, [
+      el("button", { class: "btn ghost", text: "Who's here", onclick: openSquadSheet }),
+      el("button", { class: "btn ghost", id: "lvEnd", text: "End match", onclick: function () {
+        if (!M) return;
+        if (!confirm("End the match and keep the minutes played?")) return;
+        M.t = elapsed(); M.running = false; M.done = true; M.ht = false;
+        wake(false); beep(3, 440); saveMatch(); paintLive();
+      } })
+    ]),
+    el("details", { class: "mins" }, [
+      el("summary", { text: "Minutes so far" }),
+      el("div", { id: "lvMins" })
+    ])
+  ]));
+  M.curSeg = segAt(elapsed());
+  M.sig = "";
+  paintLive();
+  if (MTIMER) clearInterval(MTIMER);
+  MTIMER = setInterval(tickMatch, 250);
+}
+
+function toggleClock() {
+  if (!M) return;
+  if (M.done) return;
+  if (M.ht) {                                   /* kick off the next half */
+    M.ht = false; M.half++;
+    M.t = M.half * halfSec(); M.runFrom = Date.now(); M.running = true;
+    M.curSeg = segAt(M.t); M.alert = null;
+    beep(1, 660); wakeWanted = true; wake(true);
+  } else if (M.running) {
+    M.t = elapsed(); M.running = false; wake(false); wakeWanted = false;
+  } else {
+    M.runFrom = Date.now(); M.running = true; wakeWanted = true; wake(true);
+    if (!actx) beep(1, 660);
+  }
+  saveMatch(); paintLive();
+}
+
+function tickMatch() {
+  if (!M) return;
+  if (!M.ht && !M.done) {
+    var e = elapsed(), halfEnd = (M.half + 1) * halfSec();
+    if (e >= halfEnd - 0.001) {
+      M.t = halfEnd; M.running = false; wake(false); wakeWanted = false;
+      if (M.half + 1 >= cfg.halves) { M.done = true; beep(3, 440); }
+      else { M.ht = true; M.htEnd = Date.now() + cfg.htMin * 60000; beep(3, 520); }
+      M.alert = null; saveMatch();
+    } else {
+      var i = segAt(e);
+      if (i !== M.curSeg) {
+        announce(M.segs[M.curSeg], M.segs[i]);
+        M.curSeg = i; saveMatch();
+      }
+    }
+  }
+  paintLive();
+  if (!M.tickSave || Date.now() - M.tickSave > 5000) { M.tickSave = Date.now(); saveMatch(); }
+}
+
+function announce(prev, cur) {
+  if (!prev || !cur) return;
+  var off = prev.on.filter(function (id) { return cur.on.indexOf(id) < 0; });
+  var on = cur.on.filter(function (id) { return prev.on.indexOf(id) < 0; });
+  if (!off.length && !on.length && prev.gk === cur.gk) return;
+  M.alert = { until: Date.now() + 40000, off: off, on: on,
+              gk: cur.gk, gkNew: prev.gk !== cur.gk };
+  beep(2, 920);
+}
+
+function replanFrom(atT, announceIt) {
+  var pl = available();
+  if (!pl.length) return;
+  var ids = squad.map(function (p) { return p.id; });
+  var seed = tally(M.segs, atT, ids);
+  var kept = [];
+  M.segs.forEach(function (s) {
+    if (s.end <= atT + 0.001) kept.push(s);
+    else if (s.start < atT - 0.001)
+      kept.push({ half: s.half, start: s.start, end: atT, on: s.on, gk: s.gk, off: s.off });
+  });
+  var last = kept.length ? kept[kept.length - 1] : null;
+  seed.lastGk = last ? last.gk : null;
+  seed.onNow = last ? last.on : [];
+  var h0 = Math.min(cfg.halves - 1, Math.floor(atT / halfSec() + 1e-9));
+  var remain = M.segs.filter(function (s) { return s.half === h0 && s.end > atT + 0.001; }).length;
+  var fresh = buildPlan(pl, cfg, planWindows(cfg, atT, remain), seed, kept.length);
+  if (!fresh.length) return;
+  M.segs = kept.concat(fresh);
+  M.curSeg = segAt(atT);
+  if (announceIt) announce(last, M.segs[M.curSeg]);
+}
+
+/* ------------------------------------------------------------- painting */
+function paintLive() {
+  if (!M) return;
+  var e = Math.min(elapsed(), totalSec());
+  var seg = M.segs[M.curSeg] || M.segs[M.segs.length - 1];
+  var clock = $("#lvClock"), sub = $("#lvSub"), half = $("#lvHalf");
+  if (!clock) return;
+
+  if (M.done) {
+    half.textContent = "FULL TIME";
+    clock.textContent = mmss(e); clock.className = "clock";
+    sub.textContent = "Well played.";
+  } else if (M.ht) {
+    var left = Math.max(0, (M.htEnd - Date.now()) / 1000);
+    half.textContent = "HALF TIME";
+    clock.textContent = mmss(left); clock.className = "clock ht";
+    sub.innerHTML = left > 0 ? "Back on in <b>" + mmss(left) + "</b>"
+      : "<b>Ready for the second half</b>";
+  } else {
+    half.textContent = (M.half === 0 ? "1ST" : M.half === 1 ? "2ND" : (M.half + 1) + "TH") + " HALF";
+    clock.textContent = mmss(e - M.half * halfSec());
+    clock.className = "clock" + (M.running ? "" : " paused");
+    var till = seg.end - e;
+    var lastOfHalf = seg.end >= (M.half + 1) * halfSec() - 0.01;
+    if (lastOfHalf) {
+      sub.innerHTML = (M.half + 1 >= cfg.halves ? "Full time in " : "Half-time in ") +
+        "<b>" + mmss(till) + "</b>";
+    } else {
+      var nxt = M.segs[M.curSeg + 1];
+      var coming = nxt ? nxt.on.filter(function (id) { return seg.on.indexOf(id) < 0; }) : [];
+      var going = nxt ? seg.on.filter(function (id) { return nxt.on.indexOf(id) < 0; }) : [];
+      sub.innerHTML = "Next change in <b>" + mmss(till) + "</b>" +
+        (going.length ? " · off " + firstNames(going) : "") +
+        (coming.length ? " · on " + firstNames(coming) : "");
+    }
+  }
+  $("#lvMeta").textContent = plural(available().length, "player") + " · " +
+    cfg.halfMin + " min halves";
+
+  var sb = $("#lvStart");
+  if (sb) {
+    sb.textContent = M.done ? "Match over" : M.ht ? "\u25b6 Start the next half"
+      : M.running ? "Pause" : (e > 0 ? "\u25b6 Resume" : "\u25b6 Kick off");
+    sb.className = "btn" + (M.running || M.done ? "" : " go");
+    sb.disabled = !!M.done;
+  }
+  var sn = $("#lvSubNow");
+  if (sn) sn.disabled = !!(M.done || M.ht);
+
+  /* the change banner */
+  var ah = $("#lvAlert");
+  if (M.alert && Date.now() < M.alert.until && !M.done && !M.ht) {
+    var fresh2 = Date.now() < M.alert.until - 34000;
+    if (ah.dataset.k !== String(M.alert.until)) {
+      ah.textContent = ""; ah.dataset.k = String(M.alert.until);
+      ah.appendChild(el("div", { class: "alert" + (fresh2 ? " flash" : "") }, [
+        el("span", { text: "CHANGE NOW" }),
+        el("span", { class: "sw", html:
+          (M.alert.off.length ? "<em>Off:</em> " + firstNames(M.alert.off) + "<br>" : "") +
+          (M.alert.on.length ? "<em>On:</em> " + firstNames(M.alert.on) + "<br>" : "") +
+          (M.alert.gkNew ? "<em>In goal:</em> " + nameOf(M.alert.gk) : "") })
+      ]));
+    } else if (!fresh2) {
+      var a = ah.firstChild; if (a) a.className = "alert";
+    }
+  } else if (ah.dataset.k) { ah.textContent = ""; delete ah.dataset.k; }
+
+  /* the pitch and the bench, redrawn only when the names change */
+  var sig = seg.on.join(",") + "|" + seg.gk + "|" + (M.segs[M.curSeg + 1] || {}).on;
+  if (sig !== M.sig) {
+    M.sig = sig;
+    var pitch = $("#lvPitch");
+    Array.prototype.slice.call(pitch.querySelectorAll(".shirt")).forEach(function (n) { n.remove(); });
+    var ordered = [seg.gk].concat(seg.on.filter(function (id) { return id !== seg.gk; }));
+    var spots = SPOTS[Math.min(5, Math.max(3, seg.on.length))] || SPOTS[4];
+    ordered.forEach(function (id, i) {
+      var sp = spots[i] || [50, 50];
+      pitch.appendChild(el("div", {
+        class: "shirt" + (i === 0 ? " k" : ""),
+        style: "left:" + sp[0] + "%;top:" + sp[1] + "%"
+      }, [
+        el("div", { class: "d", text: i === 0 ? "GK" : ((nameOf(id).trim()[0] || "?").toUpperCase()) }),
+        el("div", { class: "n", text: nameOf(id) })
+      ]));
+    });
+    var bench = $("#lvBench"); bench.textContent = "";
+    bench.appendChild(el("span", { class: "lab", text: "Resting" }));
+    var nxt2 = M.segs[M.curSeg + 1];
+    if (!seg.off.length) bench.appendChild(el("span", { class: "note", text: "Nobody — everyone is on." }));
+    seg.off.forEach(function (id) {
+      var next = nxt2 && nxt2.on.indexOf(id) >= 0;
+      bench.appendChild(el("span", { class: "b" + (next ? " next" : ""),
+        text: nameOf(id) + (next ? " ↑" : "") }));
+    });
+  }
+
+  /* the minutes table, only while the drawer is open */
+  var det = $("#lvMins");
+  if (det && det.parentNode.open) {
+    var ids = squad.map(function (p) { return p.id; });
+    var t = tally(M.segs, e, ids), tEnd = tally(M.segs, totalSec(), ids);
+    var tb = el("table", { class: "mins" });
+    tb.appendChild(el("tr", {}, [el("th", { text: "Player" }), el("th", { text: "Played" }),
+      el("th", { text: "In goal" }), el("th", { text: "Ends on" })]));
+    squad.filter(function (p) { return p.name.trim() && (t.played[p.id] > 0 || p.on); })
+      .forEach(function (p) {
+      tb.appendChild(el("tr", {}, [
+        el("td", { text: p.name.trim() || "—" }),
+        el("td", { text: Math.round(t.played[p.id] / 60) + "′" }),
+        el("td", { text: Math.round(t.gk[p.id] / 60) + "′" }),
+        el("td", { text: Math.round(tEnd.played[p.id] / 60) + "′" })
+      ]));
+    });
+    det.textContent = ""; det.appendChild(tb);
+  }
+}
+
+/* who is actually here, changed mid-game */
+function openSquadSheet() {
+  var host = $("#sheet"); host.textContent = "";
+  var rows = el("div", { class: "roster" });
+  squad.filter(function (p) { return p.name.trim(); }).forEach(function (p) {
+    var row = el("div", { class: "pl" + (p.on ? "" : " out") }, [
+      el("span", { style: "flex:1;font-weight:600", text: p.name.trim() || "—" }),
+      el("button", { class: "tog", text: "HERE", "aria-pressed": String(!!p.on), onclick: function () {
+        p.on = !p.on; saveSquad(); closeSheet(); openSquadSheet();
+      } }),
+      el("button", { class: "tog gk", text: "GK", "aria-pressed": String(!!p.gk), onclick: function () {
+        p.gk = !p.gk; saveSquad(); closeSheet(); openSquadSheet();
+      } })
+    ]);
+    rows.appendChild(row);
+  });
+  var inner = el("div", { class: "inner" }, [
+    el("div", { class: "grab" }, [el("i", {})]),
+    el("h2", { text: "Who's here" }),
+    el("p", { class: "note", html: "Turn someone off if they are hurt or have gone home, on if they have just arrived. The rest of the game is worked out again from the clock, and the minutes already played are kept." }),
+    rows,
+    el("div", { class: "foot" }, [
+      el("button", { class: "btn pri wide", text: "Re-plan the rest of the game", onclick: function () {
+        closeSheet();
+        if (M && !M.done) { replanFrom(elapsed(), true); M.sig = ""; saveMatch(); paintLive(); }
+        else refreshPlan();
+      } })
+    ])
+  ]);
+  var sh = el("div", { class: "sheet", onclick: function (e) { if (e.target === sh) closeSheet(); } }, [inner]);
+  host.appendChild(sh);
+}
+
+/* ================================================================ start */
+function showTab(which) {
+  var w = which === "warm";
+  $("#tabWarm").setAttribute("aria-selected", String(w));
+  $("#tabMatch").setAttribute("aria-selected", String(!w));
+  $("#paneWarm").classList.toggle("hide", !w);
+  $("#paneMatch").classList.toggle("hide", w);
+  save("tab", which);
+  window.scrollTo(0, 0);
+}
+$("#tabWarm").addEventListener("click", function () { tidySquad(); showTab("warm"); });
+$("#tabMatch").addEventListener("click", function () { tidySquad(); renderMatch(); showTab("match"); });
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") { closeSheet(); }
+});
+
+tidySquad();
+renderWarm();
+renderMatch();
+showTab(load("tab", "warm"));
+</script>
+</body></html>
